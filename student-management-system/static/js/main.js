@@ -12,12 +12,31 @@ class Auth {
         localStorage.removeItem('token');
     }
 
+    static setUserInfo(userInfo) {
+        localStorage.setItem('userInfo', JSON.stringify(userInfo));
+    }
+
+    static getUserInfo() {
+        const userInfo = localStorage.getItem('userInfo');
+        return userInfo ? JSON.parse(userInfo) : null;
+    }
+
+    static removeUserInfo() {
+        localStorage.removeItem('userInfo');
+    }
+
     static isAuthenticated() {
         return !!this.getToken();
     }
 
+    static isAdmin() {
+        const userInfo = this.getUserInfo();
+        return userInfo && userInfo.role === 'admin';
+    }
+
     static async logout() {
         this.removeToken();
+        this.removeUserInfo();
         window.location.href = '/';
     }
 }
@@ -209,15 +228,66 @@ function updateNavigation() {
             link.classList.add('active');
         }
     });
+    
+    // Update navigation based on user role
+    updateNavigationForRole();
+}
+
+// Update navigation based on user role
+function updateNavigationForRole() {
+    if (!Auth.isAuthenticated()) return;
+    
+    if (Auth.isAdmin()) {
+        showAdminNavigation();
+    } else {
+        hideAdminNavigation();
+    }
+}
+
+// Show admin-specific navigation items
+function showAdminNavigation() {
+    // Add Users link if it doesn't exist
+    const navList = document.querySelector('.nav-links');
+    let usersLink = document.querySelector('.nav-link[href="/users"]');
+    
+    if (!usersLink && navList) {
+        // Find the grades link to insert the users link after it
+        const gradesLinkItem = Array.from(navList.children).find(li => 
+            li.querySelector('a[href="/grades"]')
+        );
+        
+        if (gradesLinkItem) {
+            const usersLinkItem = document.createElement('li');
+            usersLinkItem.innerHTML = '<a href="/users" class="nav-link">Users</a>';
+            gradesLinkItem.after(usersLinkItem);
+        }
+    }
+}
+
+// Hide admin-specific navigation items
+function hideAdminNavigation() {
+    const usersLink = document.querySelector('.nav-link[href="/users"]');
+    if (usersLink) {
+        usersLink.closest('li').remove();
+    }
 }
 
 // Check authentication on protected pages
 function checkAuth() {
     const protectedPaths = ['/dashboard', '/students'];
+    const adminOnlyPaths = ['/users'];
     const currentPath = window.location.pathname;
     
     if (protectedPaths.includes(currentPath) && !Auth.isAuthenticated()) {
         window.location.href = '/login';
+    }
+    
+    if (adminOnlyPaths.includes(currentPath)) {
+        if (!Auth.isAuthenticated()) {
+            window.location.href = '/login';
+        } else if (!Auth.isAdmin()) {
+            window.location.href = '/dashboard';
+        }
     }
 }
 

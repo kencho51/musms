@@ -26,6 +26,35 @@ def create_user(db: Session, user: schemas.UserCreate):
     db.refresh(db_user)
     return db_user
 
+def get_users(db: Session, skip: int = 0, limit: int = 100):
+    return db.query(models.User).offset(skip).limit(limit).all()
+
+def update_user(db: Session, user_id: int, user: schemas.UserUpdate):
+    db_user = db.query(models.User).filter(models.User.id == user_id).first()
+    if db_user:
+        update_data = user.dict(exclude_unset=True)
+        for key, value in update_data.items():
+            # Only update if value is not None
+            if value is not None:
+                if key == "password" and value:
+                    # Hash the password and update the hashed_password field
+                    hashed_password = auth.get_password_hash(value)
+                    setattr(db_user, "hashed_password", hashed_password)
+                elif key != "password":
+                    # Update other fields only if they have actual values
+                    setattr(db_user, key, value)
+        db.commit()
+        db.refresh(db_user)
+    return db_user
+
+def delete_user(db: Session, user_id: int):
+    db_user = db.query(models.User).filter(models.User.id == user_id).first()
+    if db_user:
+        db.delete(db_user)
+        db.commit()
+        return True
+    return False
+
 # Student CRUD operations
 def get_student(db: Session, student_id: int):
     return db.query(models.Student).filter(models.Student.id == student_id).first()

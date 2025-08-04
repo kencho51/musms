@@ -69,6 +69,10 @@ async def grades_page(request: Request):
 async def student_grades_page(request: Request, student_id: int):
     return templates.TemplateResponse("student_grades.html", {"request": request, "student_id": student_id})
 
+@app.get("/users", response_class=HTMLResponse)
+async def users_page(request: Request):
+    return templates.TemplateResponse("users.html", {"request": request})
+
 # API Routes
 
 @app.post("/api/register")
@@ -431,6 +435,127 @@ async def delete_grade(
     if not crud.delete_grade(db, grade_id):
         raise HTTPException(status_code=404, detail="Grade not found")
     return {"message": "Grade deleted successfully"}
+
+# User Management API Routes (Admin Only)
+
+def check_admin_permissions(current_user: models.User):
+    if current_user is None:
+        raise HTTPException(status_code=401, detail="Not authenticated")
+    if current_user.role != "admin":
+        raise HTTPException(status_code=403, detail="Admin access required")
+
+@app.get("/api/users", response_model=List[schemas.User])
+async def get_users(
+    skip: int = 0,
+    limit: int = 100,
+    db: Session = Depends(get_db),
+    current_user: models.User = Depends(get_current_user)
+):
+    check_admin_permissions(current_user)
+    users = crud.get_users(db, skip=skip, limit=limit)
+    return users
+
+@app.post("/api/users", response_model=schemas.User)
+async def create_user_admin(
+    username: str = Form(...),
+    email: str = Form(...),
+    password: str = Form(...),
+    role: str = Form(default="student"),
+    db: Session = Depends(get_db),
+    current_user: models.User = Depends(get_current_user)
+):
+    check_admin_permissions(current_user)
+    
+    # Check if user exists
+    if crud.get_user_by_username(db, username):
+        raise HTTPException(status_code=400, detail="Username already registered")
+    if crud.get_user_by_email(db, email):
+        raise HTTPException(status_code=400, detail="Email already registered")
+    
+    user_data = schemas.UserCreate(username=username, email=email, password=password, role=role)
+    user = crud.create_user(db, user_data)
+    return user
+
+@app.put("/api/users/{user_id}", response_model=schemas.User)
+async def update_user_admin(
+    user_id: int,
+    request: Request,
+    db: Session = Depends(get_db),
+    current_user: models.User = Depends(get_current_user)
+):
+    check_admin_permissions(current_user)
+    
+    try:
+        # Get form data
+        form_data = await request.form()
+        
+        username = form_data.get("username", "").strip()
+        email = form_data.get("email", "").strip()
+        role = form_data.get("role", "").strip()
+        is_active_str = form_data.get("is_active", "")
+        password = form_data.get("password", "").strip()
+        
+        # Debug logging
+        print(f"Updating user {user_id}")
+        print(f"Raw form data: {dict(form_data)}")
+        print(f"Parsed values: username='{username}', email='{email}', role='{role}', is_active='{is_active_str}', password={'***' if password else '(empty)'}")
+        
+        # Convert is_active string to boolean
+        is_active_bool = None
+        if is_active_str:
+            is_active_bool = is_active_str.lower() in ['true', '1', 'yes', 'on']
+        
+        # Validate that required fields are not empty
+        if not username:
+            raise HTTPException(status_code=400, detail="Username is required")
+        if not email:
+            raise HTTPException(status_code=400, detail="Email is required")
+        if not role:
+            raise HTTPException(status_code=400, detail="Role is required")
+        
+        # Check if username or email already exists for other users
+        existing_user_by_username = crud.get_user_by_username(db, username)
+        if existing_user_by_username and existing_user_by_username.id != user_id:
+            raise HTTPException(status_code=400, detail="Username already exists")
+        
+        existing_user_by_email = crud.get_user_by_email(db, email)
+        if existing_user_by_email and existing_user_by_email.id != user_id:
+            raise HTTPException(status_code=400, detail="Email already exists")
+        
+        user_data = schemas.UserUpdate(
+            username=username,
+            email=email,
+            role=role,
+            is_active=is_active_bool,
+            password=password if password else None
+        )
+        
+        user = crud.update_user(db, user_id, user_data)
+        if user is None:
+            raise HTTPException(status_code=404, detail="User not found")
+        return user
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        print(f"Error updating user: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Failed to update user: {str(e)}")
+
+@app.delete("/api/users/{user_id}")
+async def delete_user_admin(
+    user_id: int,
+    db: Session = Depends(get_db),
+    current_user: models.User = Depends(get_current_user)
+):
+    check_admin_permissions(current_user)
+    
+    # Prevent admin from deleting themselves
+    if user_id == current_user.id:
+        raise HTTPException(status_code=400, detail="Cannot delete your own account")
+    
+    if not crud.delete_user(db, user_id):
+        raise HTTPException(status_code=404, detail="User not found")
+    return {"message": "User deleted successfully"}
 
 if __name__ == "__main__":
     import uvicorn

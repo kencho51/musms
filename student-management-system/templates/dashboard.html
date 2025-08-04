@@ -58,6 +58,9 @@
                 <button class="button button-outline">
                     Import Student Data
                 </button>
+                <a href="/users" class="button button-secondary" id="adminUserManagement" style="display: none;">
+                    Manage Users
+                </a>
             </div>
         </div>
     </div>
@@ -220,7 +223,14 @@ function openAddStudentModal() {
 document.addEventListener('DOMContentLoaded', () => {
     if (window.location.pathname === '/dashboard') {
         loadDashboardData();
+        showAdminActions();
     }
 });
+
+function showAdminActions() {
+    if (Auth.isAdmin()) {
+        document.getElementById('adminUserManagement').style.display = 'inline-flex';
+    }
+}
 </script>
 {% endblock %} 

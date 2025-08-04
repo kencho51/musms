@@ -61,6 +61,7 @@ document.getElementById('loginForm').addEventListener('submit', async (e) => {
         
         if (response.ok) {
             Auth.setToken(result.access_token);
+            Auth.setUserInfo(result.user);
             showAlert('Login successful');
             setTimeout(() => {
                 window.location.href = '/dashboard';
