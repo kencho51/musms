@@ -1,0 +1,226 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - University Student Management System{% endblock %}
+
+{% block content %}
+<div class="mb-6">
+    <h1 class="text-3xl font-bold mb-2">Dashboard</h1>
+    <p class="text-muted-foreground">Welcome to the University Student Management System</p>
+</div>
+
+<div class="grid grid-cols-4 gap-6 mb-8">
+    <div class="card">
+        <div class="card-content text-center">
+            <div class="text-2xl font-bold text-primary" id="totalStudents">0</div>
+            <div class="text-sm text-muted-foreground">Total Students</div>
+        </div>
+    </div>
+    
+    <div class="card">
+        <div class="card-content text-center">
+            <div class="text-2xl font-bold text-primary" id="activeUsers">0</div>
+            <div class="text-sm text-muted-foreground">Active Users</div>
+        </div>
+    </div>
+    
+    <div class="card">
+        <div class="card-content text-center">
+            <div class="text-2xl font-bold text-primary">4</div>
+            <div class="text-sm text-muted-foreground">Academic Years</div>
+        </div>
+    </div>
+    
+    <div class="card">
+        <div class="card-content text-center">
+            <div class="text-2xl font-bold text-primary">12</div>
+            <div class="text-sm text-muted-foreground">Departments</div>
+        </div>
+    </div>
+</div>
+
+<div class="grid grid-cols-2 gap-6">
+    <div class="card">
+        <div class="card-header">
+            <h3 class="card-title">Quick Actions</h3>
+            <p class="card-description">Frequently used operations</p>
+        </div>
+        <div class="card-content">
+            <div class="grid gap-4">
+                <a href="/students" class="button button-outline">
+                    View All Students
+                </a>
+                <button class="button button-primary" onclick="openAddStudentModal()">
+                    Add New Student
+                </button>
+                <button class="button button-secondary">
+                    Generate Reports
+                </button>
+                <button class="button button-outline">
+                    Import Student Data
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <div class="card">
+        <div class="card-header">
+            <h3 class="card-title">Recent Activity</h3>
+            <p class="card-description">Latest system activities</p>
+        </div>
+        <div class="card-content">
+            <div id="recentActivity">
+                <div class="text-sm text-muted-foreground mb-2">
+                    • Student John Doe registered (2 hours ago)
+                </div>
+                <div class="text-sm text-muted-foreground mb-2">
+                    • User Mary Smith logged in (3 hours ago)
+                </div>
+                <div class="text-sm text-muted-foreground mb-2">
+                    • Student record updated for Jane Wilson (5 hours ago)
+                </div>
+                <div class="text-sm text-muted-foreground mb-2">
+                    • New user account created (1 day ago)
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card mt-6">
+    <div class="card-header">
+        <h3 class="card-title">System Overview</h3>
+        <p class="card-description">Current system status and information</p>
+    </div>
+    <div class="card-content">
+        <div class="grid grid-cols-3 gap-6">
+            <div>
+                <h4 class="font-semibold mb-2">Student Distribution</h4>
+                <div class="text-sm text-muted-foreground">
+                    <div class="flex justify-between mb-1">
+                        <span>Year 1:</span>
+                        <span id="year1Count">0</span>
+                    </div>
+                    <div class="flex justify-between mb-1">
+                        <span>Year 2:</span>
+                        <span id="year2Count">0</span>
+                    </div>
+                    <div class="flex justify-between mb-1">
+                        <span>Year 3:</span>
+                        <span id="year3Count">0</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span>Year 4:</span>
+                        <span id="year4Count">0</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div>
+                <h4 class="font-semibold mb-2">Popular Majors</h4>
+                <div class="text-sm text-muted-foreground">
+                    <div class="flex justify-between mb-1">
+                        <span>Computer Science:</span>
+                        <span id="csCount">0</span>
+                    </div>
+                    <div class="flex justify-between mb-1">
+                        <span>Business Admin:</span>
+                        <span id="baCount">0</span>
+                    </div>
+                    <div class="flex justify-between mb-1">
+                        <span>Engineering:</span>
+                        <span id="engCount">0</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span>Other:</span>
+                        <span id="otherCount">0</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div>
+                <h4 class="font-semibold mb-2">System Health</h4>
+                <div class="text-sm text-muted-foreground">
+                    <div class="flex justify-between mb-1">
+                        <span>Database:</span>
+                        <span class="text-green-600">Healthy</span>
+                    </div>
+                    <div class="flex justify-between mb-1">
+                        <span>API:</span>
+                        <span class="text-green-600">Online</span>
+                    </div>
+                    <div class="flex justify-between mb-1">
+                        <span>Last Backup:</span>
+                        <span>2 hours ago</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span>Uptime:</span>
+                        <span>99.9%</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+async function loadDashboardData() {
+    try {
+        const response = await API.request('/api/students');
+        if (response.ok) {
+            const students = await response.json();
+            
+            // Update total students
+            document.getElementById('totalStudents').textContent = students.length;
+            
+            // Calculate year distribution
+            const yearCounts = { 1: 0, 2: 0, 3: 0, 4: 0 };
+            const majorCounts = { 'Computer Science': 0, 'Business Administration': 0, 'Engineering': 0, 'Other': 0 };
+            
+            students.forEach(student => {
+                if (student.year_of_study && yearCounts[student.year_of_study] !== undefined) {
+                    yearCounts[student.year_of_study]++;
+                }
+                
+                if (student.major) {
+                    if (student.major.toLowerCase().includes('computer')) {
+                        majorCounts['Computer Science']++;
+                    } else if (student.major.toLowerCase().includes('business')) {
+                        majorCounts['Business Administration']++;
+                    } else if (student.major.toLowerCase().includes('engineering')) {
+                        majorCounts['Engineering']++;
+                    } else {
+                        majorCounts['Other']++;
+                    }
+                }
+            });
+            
+            // Update year counts
+            document.getElementById('year1Count').textContent = yearCounts[1];
+            document.getElementById('year2Count').textContent = yearCounts[2];
+            document.getElementById('year3Count').textContent = yearCounts[3];
+            document.getElementById('year4Count').textContent = yearCounts[4];
+            
+            // Update major counts
+            document.getElementById('csCount').textContent = majorCounts['Computer Science'];
+            document.getElementById('baCount').textContent = majorCounts['Business Administration'];
+            document.getElementById('engCount').textContent = majorCounts['Engineering'];
+            document.getElementById('otherCount').textContent = majorCounts['Other'];
+        }
+    } catch (error) {
+        console.error('Error loading dashboard data:', error);
+    }
+}
+
+function openAddStudentModal() {
+    window.location.href = '/students';
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    if (window.location.pathname === '/dashboard') {
+        loadDashboardData();
+    }
+});
+</script>
+{% endblock %} 

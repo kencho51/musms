@@ -1,0 +1,188 @@
+{% extends "base.html" %}
+
+{% block title %}Grades - University Student Management System{% endblock %}
+
+{% block content %}
+<div class="flex justify-between items-center mb-6">
+    <div>
+        <h1 class="text-3xl font-bold mb-2">Grade Management</h1>
+        <p class="text-muted-foreground">Record and manage student grades and GPA</p>
+    </div>
+    <button class="button button-primary" onclick="openAddGradeModal()">
+        Add Grade Entry
+    </button>
+</div>
+
+<div class="grid grid-cols-3 gap-6 mb-6">
+    <div class="card">
+        <div class="card-content">
+            <div class="flex gap-4 items-center">
+                <select id="studentFilter" class="input flex-1">
+                    <option value="">Filter by Student</option>
+                </select>
+                <button class="button button-outline button-sm" onclick="clearStudentFilter()">Clear</button>
+            </div>
+        </div>
+    </div>
+    
+    <div class="card">
+        <div class="card-content">
+            <div class="flex gap-4 items-center">
+                <select id="courseFilter" class="input flex-1">
+                    <option value="">Filter by Course</option>
+                </select>
+                <button class="button button-outline button-sm" onclick="clearCourseFilter()">Clear</button>
+            </div>
+        </div>
+    </div>
+    
+    <div class="card">
+        <div class="card-content">
+            <div class="flex gap-4 items-center">
+                <select id="examTypeFilter" class="input flex-1">
+                    <option value="">Filter by Exam Type</option>
+                    <option value="Midterm">Midterm</option>
+                    <option value="Final">Final</option>
+                    <option value="Quiz">Quiz</option>
+                    <option value="Assignment">Assignment</option>
+                    <option value="Project">Project</option>
+                </select>
+                <button class="button button-outline button-sm" onclick="clearExamTypeFilter()">Clear</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-header">
+        <h3 class="card-title">Grade Records</h3>
+        <p class="card-description">All recorded grades in the system</p>
+    </div>
+    <div class="card-content">
+        <div style="overflow-x: auto;">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Student</th>
+                        <th>Course</th>
+                        <th>Exam Type</th>
+                        <th>Numerical Grade</th>
+                        <th>Letter Grade</th>
+                        <th>GPA Points</th>
+                        <th>Exam Date</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="gradesTableBody">
+                    <!-- Grades will be loaded here -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Grade Modal -->
+<div id="gradeModal" class="modal hidden">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3 class="modal-title" id="modalTitle">Add Grade Entry</h3>
+            <button class="close-button">&times;</button>
+        </div>
+        <div class="modal-body">
+            <form id="gradeForm">
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="form-group">
+                        <label for="student_id" class="label">Student</label>
+                        <select id="student_id" name="student_id" class="input" required>
+                            <option value="">Select Student</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="course_id" class="label">Course</label>
+                        <select id="course_id" name="course_id" class="input" required>
+                            <option value="">Select Course</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="exam_type" class="label">Exam Type</label>
+                        <select id="exam_type" name="exam_type" class="input">
+                            <option value="">Select Type</option>
+                            <option value="Midterm">Midterm</option>
+                            <option value="Final">Final Exam</option>
+                            <option value="Quiz">Quiz</option>
+                            <option value="Assignment">Assignment</option>
+                            <option value="Project">Project</option>
+                            <option value="Lab">Lab</option>
+                            <option value="Presentation">Presentation</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="exam_date" class="label">Exam Date</label>
+                        <input type="date" id="exam_date" name="exam_date" class="input">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="grade_value" class="label">Numerical Grade (0-100)</label>
+                        <input type="number" id="grade_value" name="grade_value" class="input" min="0" max="100" step="0.1" placeholder="85.5">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="letter_grade" class="label">Letter Grade</label>
+                        <select id="letter_grade" name="letter_grade" class="input">
+                            <option value="">Auto-calculate from numerical</option>
+                            <option value="A+">A+ (4.0)</option>
+                            <option value="A">A (4.0)</option>
+                            <option value="A-">A- (3.7)</option>
+                            <option value="B+">B+ (3.3)</option>
+                            <option value="B">B (3.0)</option>
+                            <option value="B-">B- (2.7)</option>
+                            <option value="C+">C+ (2.3)</option>
+                            <option value="C">C (2.0)</option>
+                            <option value="C-">C- (1.7)</option>
+                            <option value="D+">D+ (1.3)</option>
+                            <option value="D">D (1.0)</option>
+                            <option value="F">F (0.0)</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group" style="grid-column: span 2;">
+                        <label for="notes" class="label">Notes</label>
+                        <textarea id="notes" name="notes" class="input" rows="3" placeholder="Additional notes about this grade..."></textarea>
+                    </div>
+                </div>
+                
+                <div class="flex gap-4 justify-end mt-6">
+                    <button type="button" class="button button-outline" id="cancelButton">
+                        Cancel
+                    </button>
+                    <button type="submit" class="button button-primary">
+                        Save Grade
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Student GPA Modal -->
+<div id="gpaModal" class="modal hidden">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3 class="modal-title">Student GPA Details</h3>
+            <button class="close-button">&times;</button>
+        </div>
+        <div class="modal-body">
+            <div id="gpaContent">
+                <!-- GPA details will be loaded here -->
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="/static/js/grades.js"></script>
+{% endblock %} 

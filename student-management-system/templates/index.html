@@ -1,0 +1,78 @@
+{% extends "base.html" %}
+
+{% block title %}Home - University Student Management System{% endblock %}
+
+{% block content %}
+<div class="text-center mb-6">
+    <h1 class="text-3xl font-bold mb-4">University Student Management System</h1>
+    <p class="text-lg text-muted-foreground mb-6">
+        Manage student records, registrations, and academic information efficiently
+    </p>
+    
+    <div class="flex gap-4 justify-center">
+        <a href="/register" class="button button-primary">Get Started</a>
+        <a href="/login" class="button button-outline">Sign In</a>
+    </div>
+</div>
+
+<div class="grid grid-cols-3 gap-6 mt-12">
+    <div class="card">
+        <div class="card-content">
+            <h3 class="text-xl font-semibold mb-2">Student Records</h3>
+            <p class="text-muted-foreground">
+                Maintain comprehensive student profiles with personal information, 
+                academic details, and contact information.
+            </p>
+        </div>
+    </div>
+    
+    <div class="card">
+        <div class="card-content">
+            <h3 class="text-xl font-semibold mb-2">User Management</h3>
+            <p class="text-muted-foreground">
+                Secure user registration and authentication system with 
+                role-based access control for administrators and students.
+            </p>
+        </div>
+    </div>
+    
+    <div class="card">
+        <div class="card-content">
+            <h3 class="text-xl font-semibold mb-2">CRUD Operations</h3>
+            <p class="text-muted-foreground">
+                Full Create, Read, Update, and Delete functionality for 
+                managing student records with intuitive interface.
+            </p>
+        </div>
+    </div>
+</div>
+
+<div class="card mt-12">
+    <div class="card-header">
+        <h2 class="card-title">Features</h2>
+        <p class="card-description">Everything you need to manage university students</p>
+    </div>
+    <div class="card-content">
+        <div class="grid grid-cols-2 gap-6">
+            <div>
+                <h4 class="font-semibold mb-2">Student Management</h4>
+                <ul class="text-sm text-muted-foreground">
+                    <li>• Add, edit, and delete student records</li>
+                    <li>• Search and filter student database</li>
+                    <li>• Track academic progress and information</li>
+                    <li>• Manage contact details and personal info</li>
+                </ul>
+            </div>
+            <div>
+                <h4 class="font-semibold mb-2">System Features</h4>
+                <ul class="text-sm text-muted-foreground">
+                    <li>• Secure user authentication</li>
+                    <li>• Role-based access control</li>
+                    <li>• Responsive web interface</li>
+                    <li>• RESTful API endpoints</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 
