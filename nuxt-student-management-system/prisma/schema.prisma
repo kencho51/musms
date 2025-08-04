@@ -1,0 +1,188 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// User model for authentication and authorization
+model User {
+  id        Int      @id @default(autoincrement())
+  username  String   @unique
+  email     String   @unique
+  name      String?
+  password  String   // hashed password
+  role      Role     @default(STUDENT)
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  student         Student?      // One-to-one relation if user is a student
+  createdStudents Student[]     @relation("CreatedBy")
+  createdCourses  Course[]      @relation("CreatedBy")
+  createdGrades   Grade[]       @relation("CreatedBy")
+  activityLogs    ActivityLog[] // Activities performed by this user
+
+  @@map("users")
+}
+
+// Student model for academic information
+model Student {
+  id             Int      @id @default(autoincrement())
+  studentId      String   @unique // Student ID number
+  firstName      String
+  lastName       String
+  email          String   @unique
+  phone          String?
+  dateOfBirth    DateTime?
+  major          String?
+  yearOfStudy    Int?
+  enrollmentDate DateTime?
+  status         StudentStatus @default(ACTIVE)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  // Relations
+  userId    Int?  @unique
+  user      User? @relation(fields: [userId], references: [id])
+  createdBy Int?
+  creator   User? @relation("CreatedBy", fields: [createdBy], references: [id])
+  
+  enrollments Enrollment[]
+  grades      Grade[]
+
+  @@map("students")
+}
+
+// Course model for academic courses
+model Course {
+  id             Int      @id @default(autoincrement())
+  courseCode     String   @unique
+  courseName     String
+  description    String?
+  credits        Int
+  semester       Semester
+  year           Int
+  instructor     String?
+  maxStudents    Int      @default(30)
+  status         CourseStatus @default(ACTIVE)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  // Relations
+  createdBy Int?
+  creator   User? @relation("CreatedBy", fields: [createdBy], references: [id])
+  
+  enrollments Enrollment[]
+  grades      Grade[]
+
+  @@map("courses")
+}
+
+// Enrollment model for student-course relationships
+model Enrollment {
+  id             Int      @id @default(autoincrement())
+  enrollmentDate DateTime @default(now())
+  status         EnrollmentStatus @default(ENROLLED)
+  finalGrade     String?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  // Relations
+  studentId Int
+  student   Student @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  courseId  Int
+  course    Course  @relation(fields: [courseId], references: [id], onDelete: Cascade)
+
+  @@unique([studentId, courseId])
+  @@map("enrollments")
+}
+
+// Grade model for academic assessments
+model Grade {
+  id          Int      @id @default(autoincrement())
+  gradeValue  Float?   // Numeric grade (0-100)
+  letterGrade String?  // Letter grade (A, B, C, etc.)
+  gpaPoints   Float?   // GPA points (0.0-4.0)
+  examType    String?  // Midterm, Final, Quiz, Assignment, etc.
+  examDate    DateTime?
+  notes       String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  studentId Int
+  student   Student @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  courseId  Int
+  course    Course  @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  createdBy Int?
+  creator   User?   @relation("CreatedBy", fields: [createdBy], references: [id])
+
+  @@map("grades")
+}
+
+// Activity log for tracking system activities
+model ActivityLog {
+  id          Int      @id @default(autoincrement())
+  type        String   // student_registered, course_created, grade_added, etc.
+  title       String
+  description String
+  metadata    String?  // JSON string for additional data
+  createdAt   DateTime @default(now())
+
+  // Relations
+  userId Int?
+  user   User? @relation(fields: [userId], references: [id])
+
+  @@map("activity_logs")
+}
+
+// System settings
+model Setting {
+  id    Int    @id @default(autoincrement())
+  key   String @unique
+  value String
+  description String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("settings")
+}
+
+// Enums
+enum Role {
+  ADMIN
+  TEACHER
+  STUDENT
+}
+
+enum StudentStatus {
+  ACTIVE
+  INACTIVE
+  GRADUATED
+  SUSPENDED
+}
+
+enum CourseStatus {
+  ACTIVE
+  INACTIVE
+  COMPLETED
+}
+
+enum EnrollmentStatus {
+  ENROLLED
+  DROPPED
+  COMPLETED
+}
+
+enum Semester {
+  FALL
+  SPRING
+  SUMMER
+}

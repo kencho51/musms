@@ -1,0 +1,57 @@
+{
+  "name": "nuxt-student-management-system",
+  "private": true,
+  "type": "module",
+  "description": "A comprehensive Student Management System built with Nuxt 4",
+  "version": "1.0.0",
+  "scripts": {
+    "build": "nuxt build",
+    "dev": "nuxt dev",
+    "generate": "nuxt generate",
+    "preview": "nuxt preview",
+    "postinstall": "nuxt prepare",
+    "typecheck": "nuxt typecheck",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "test": "vitest",
+    "test:watch": "vitest --watch",
+    "db:generate": "prisma generate",
+    "db:push": "prisma db push",
+    "db:seed": "tsx prisma/seed.ts",
+    "db:studio": "prisma studio",
+    "db:reset": "prisma db push --force-reset && npm run db:seed"
+  },
+  "dependencies": {
+    "nuxt": "^4.0.1",
+    "vue": "^3.5.18",
+    "vue-router": "^4.5.1",
+    "@nuxt/ui": "^3.0.0",
+    "@nuxtjs/tailwindcss": "^6.11.4",
+    "@nuxtjs/google-fonts": "^3.0.2",
+    "@vueuse/nuxt": "^11.1.0",
+    "@pinia/nuxt": "^0.5.1",
+    "pinia": "^2.2.4",
+    "zod": "^3.22.4",
+    "@vee-validate/nuxt": "^4.12.5",
+    "@vee-validate/zod": "^4.12.5",
+    "bcryptjs": "^2.4.3",
+    "jsonwebtoken": "^9.0.2",
+    "date-fns": "^3.0.0",
+    "chart.js": "^4.4.0",
+    "vue-chartjs": "^5.3.0",
+    "@iconify/vue": "^4.1.1"
+  },
+  "devDependencies": {
+    "@nuxt/eslint": "^0.9.0",
+    "@types/bcryptjs": "^2.4.6",
+    "@types/jsonwebtoken": "^9.0.6",
+    "typescript": "^5.3.3",
+    "vitest": "^1.0.0",
+    "prisma": "^5.8.0",
+    "@prisma/client": "^5.8.0",
+    "tsx": "^4.19.2"
+  },
+  "prisma": {
+    "seed": "tsx prisma/seed.ts"
+  }
+} 
