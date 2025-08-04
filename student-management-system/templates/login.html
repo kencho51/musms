@@ -62,6 +62,10 @@ document.getElementById('loginForm').addEventListener('submit', async (e) => {
         if (response.ok) {
             Auth.setToken(result.access_token);
             Auth.setUserInfo(result.user);
+            // Update navigation immediately
+            if (typeof updateNavigation === 'function') {
+                updateNavigation();
+            }
             showAlert('Login successful');
             setTimeout(() => {
                 window.location.href = '/dashboard';

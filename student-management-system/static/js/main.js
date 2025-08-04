@@ -35,9 +35,22 @@ class Auth {
     }
 
     static async logout() {
+        console.log('Logout initiated');
         this.removeToken();
         this.removeUserInfo();
-        window.location.href = '/';
+        console.log('Tokens cleared');
+        
+        // Update navigation immediately before redirect
+        if (typeof updateNavigation === 'function') {
+            updateNavigation();
+            console.log('Navigation updated');
+        }
+        
+        // Small delay to show the navigation change, then redirect
+        setTimeout(() => {
+            console.log('Redirecting to home page');
+            window.location.href = '/';
+        }, 100);
     }
 }
 
@@ -229,8 +242,40 @@ function updateNavigation() {
         }
     });
     
-    // Update navigation based on user role
+    // Update navigation based on authentication state and user role
+    updateNavigationForAuth();
     updateNavigationForRole();
+}
+
+// Update navigation based on authentication state
+function updateNavigationForAuth() {
+    const isAuthenticated = Auth.isAuthenticated();
+    
+    // Get navigation elements
+    const loginLink = document.querySelector('a[href="/login"]');
+    const registerLink = document.querySelector('a[href="/register"]');
+    const logoutButton = document.querySelector('[data-logout]');
+    
+    console.log('Updating navigation auth state:', { 
+        isAuthenticated, 
+        hasLoginLink: !!loginLink, 
+        hasRegisterLink: !!registerLink, 
+        hasLogoutButton: !!logoutButton 
+    });
+    
+    if (isAuthenticated) {
+        // User is logged in - hide login/register, show logout
+        if (loginLink) loginLink.closest('li').style.display = 'none';
+        if (registerLink) registerLink.closest('li').style.display = 'none';
+        if (logoutButton) logoutButton.closest('li').style.display = 'block';
+        console.log('Set navigation for authenticated user');
+    } else {
+        // User is not logged in - show login/register, hide logout
+        if (loginLink) loginLink.closest('li').style.display = 'block';
+        if (registerLink) registerLink.closest('li').style.display = 'block';
+        if (logoutButton) logoutButton.closest('li').style.display = 'none';
+        console.log('Set navigation for anonymous user');
+    }
 }
 
 // Update navigation based on user role
@@ -291,6 +336,11 @@ function checkAuth() {
     }
 }
 
+// Force navigation update (can be called from anywhere)
+function refreshNavigation() {
+    updateNavigation();
+}
+
 // Initialize app
 document.addEventListener('DOMContentLoaded', () => {
     updateNavigation();
@@ -299,6 +349,12 @@ document.addEventListener('DOMContentLoaded', () => {
     // Add logout functionality
     const logoutButtons = document.querySelectorAll('[data-logout]');
     logoutButtons.forEach(button => {
-        button.addEventListener('click', Auth.logout);
+        button.addEventListener('click', (e) => {
+            e.preventDefault();
+            Auth.logout();
+        });
     });
+    
+    // Update navigation every 5 seconds to handle token expiration
+    setInterval(updateNavigation, 5000);
 }); 
