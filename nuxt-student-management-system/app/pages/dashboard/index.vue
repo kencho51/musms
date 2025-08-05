@@ -25,11 +25,12 @@
           🎉 Login Successful!
         </h2>
         <p class="text-gray-600 dark:text-gray-400 mb-4">
-          Welcome {{ (userInfo as any)?.name || (userInfo as any)?.username || 'User' }}! You are logged in as {{ (userInfo as any)?.role || 'Student' }}.
+          Welcome {{ userInfo?.name || userInfo?.username || 'User' }}! You are logged in as {{ userInfo?.role || 'Student' }}.
         </p>
       </div>
+
       <!-- Admin Management Grid -->
-      <div v-if="(userInfo as any)?.role === 'ADMIN'" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+      <div v-if="userInfo?.role === 'ADMIN'" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
         <!-- User Management -->
         <NuxtLink to="/users" class="block">
           <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6 hover:shadow-md transition-shadow cursor-pointer">
@@ -92,7 +93,7 @@
       </div>
 
       <!-- Teacher Management Options -->
-      <div v-if="(userInfo as any)?.role === 'TEACHER'" class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+      <div v-if="userInfo?.role === 'TEACHER'" class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
         <!-- My Courses -->
         <NuxtLink to="/courses" class="block">
           <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6 hover:shadow-md transition-shadow cursor-pointer">
@@ -133,8 +134,9 @@
           </div>
         </NuxtLink>
       </div>
+
       <!-- Student View -->
-      <div v-if="(userInfo as any)?.role === 'STUDENT'" class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+      <div v-if="userInfo?.role === 'STUDENT'" class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
         <!-- My Courses -->
         <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
           <div class="flex items-center mb-4">
@@ -184,7 +186,7 @@ definePageMeta({
 })
 
 // User info
-const userInfo = ref<any>(null)
+const userInfo = ref(null)
 const loading = ref(true)
 
 // Get user info
@@ -204,11 +206,9 @@ const getUserInfo = async () => {
       const response = await $fetch('/api/auth/me', {
         headers: { Authorization: `Bearer ${token.value}` }
       })
+      
       if (response.success) {
         userInfo.value = response.data
-        // Store in cookie for future use
-        const userCookie = useCookie('user-info')
-        userCookie.value = JSON.stringify(response.data)
       }
     }
   } catch (error) {
