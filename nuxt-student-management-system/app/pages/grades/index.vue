@@ -1,139 +1,151 @@
 <template>
-  <div class="p-6">
+  <div class="container mx-auto p-8 space-y-8">
     <!-- Header -->
-    <div class="flex justify-between items-center mb-6">
-      <div>
-        <h1 class="text-3xl font-bold text-gray-900 dark:text-white">Grade Management</h1>
-        <p class="text-gray-600 dark:text-gray-400">Manage student grades and academic assessments</p>
+    <div class="flex items-center justify-between">
+      <div class="space-y-1">
+        <h2 class="text-2xl font-semibold tracking-tight">Grade Management</h2>
+        <p class="text-sm text-muted-foreground">
+          Manage student grades and academic assessments
+        </p>
       </div>
       <button
         @click="showCreateModal = true"
-        class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center gap-2"
+        class="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2"
       >
-        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <svg class="mr-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
         </svg>
         Add Grade
       </button>
     </div>
 
-    <!-- Filters -->
-    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-4 mb-6">
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <div>
-          <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Course</label>
-          <select
-            v-model="courseFilter"
-            @change="fetchGrades"
-            class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
-          >
-            <option value="">All Courses</option>
-            <option v-for="course in courses" :key="course.id" :value="course.id">
-              {{ course.courseCode }} - {{ course.courseName }}
-            </option>
-          </select>
-        </div>
-        <div>
-          <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Student</label>
-          <select
-            v-model="studentFilter"
-            @change="fetchGrades"
-            class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
-          >
-            <option value="">All Students</option>
-            <option v-for="student in students" :key="student.id" :value="student.id">
-              {{ student.firstName }} {{ student.lastName }} ({{ student.studentId }})
-            </option>
-          </select>
-        </div>
-        <div>
-          <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Exam Type</label>
-          <input
-            v-model="examTypeFilter"
-            @input="debouncedFetch"
-            type="text"
-            placeholder="Filter by exam type..."
-            class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
-          >
+    <!-- Filters Card -->
+    <div class="rounded-lg border bg-card text-card-foreground shadow-sm">
+      <div class="p-6">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div class="space-y-2">
+            <label class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">Course</label>
+            <select
+              v-model="courseFilter"
+              @change="fetchGrades"
+              class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              <option value="">All Courses</option>
+              <option v-for="course in courses" :key="course.id" :value="course.id">
+                {{ course.courseCode }} - {{ course.courseName }}
+              </option>
+            </select>
+          </div>
+          <div class="space-y-2">
+            <label class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">Student</label>
+            <select
+              v-model="studentFilter"
+              @change="fetchGrades"
+              class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              <option value="">All Students</option>
+              <option v-for="student in students" :key="student.id" :value="student.id">
+                {{ student.firstName }} {{ student.lastName }} ({{ student.studentId }})
+              </option>
+            </select>
+          </div>
+          <div class="space-y-2">
+            <label class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">Exam Type</label>
+            <input
+              v-model="examTypeFilter"
+              @input="debouncedFetch"
+              type="text"
+              placeholder="Filter by exam type..."
+              class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+            >
+          </div>
         </div>
       </div>
     </div>
 
     <!-- Grades Table -->
-    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden">
-      <div v-if="loading" class="p-8 text-center">
-        <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
-        <p class="mt-2 text-gray-600 dark:text-gray-400">Loading grades...</p>
+    <div class="rounded-md border">
+      <div v-if="loading" class="flex items-center justify-center p-8">
+        <div class="flex items-center space-x-2">
+          <div class="animate-spin rounded-full h-4 w-4 border-b-2 border-primary"></div>
+          <p class="text-sm text-muted-foreground">Loading grades...</p>
+        </div>
       </div>
 
-      <div v-else-if="error" class="p-8 text-center text-red-600 dark:text-red-400">
-        {{ error }}
+      <div v-else-if="error" class="flex items-center justify-center p-8">
+        <p class="text-sm text-destructive">{{ error }}</p>
       </div>
 
       <div v-else>
         <table class="w-full">
-          <thead class="bg-gray-50 dark:bg-gray-700">
-            <tr>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Student</th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Course</th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Exam Type</th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Grade</th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Date</th>
-              <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Actions</th>
+          <thead>
+            <tr class="border-b">
+              <th class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Student</th>
+              <th class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Course</th>
+              <th class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Exam Type</th>
+              <th class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Grade</th>
+              <th class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Date</th>
+              <th class="h-12 px-4 text-right align-middle font-medium text-muted-foreground">Actions</th>
             </tr>
           </thead>
-          <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
-            <tr v-for="grade in grades" :key="grade.id" class="hover:bg-gray-50 dark:hover:bg-gray-700">
-              <td class="px-6 py-4 whitespace-nowrap">
-                <div class="flex items-center">
-                  <div class="flex-shrink-0 h-10 w-10">
-                    <div class="h-10 w-10 rounded-full bg-blue-600 flex items-center justify-center text-white font-medium">
+          <tbody>
+            <tr v-for="grade in grades" :key="grade.id" class="border-b hover:bg-muted/50">
+              <td class="p-4 align-middle">
+                <div class="flex items-center gap-3">
+                  <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-primary text-primary-foreground">
+                    <span class="text-sm font-medium">
                       {{ grade.student.firstName.charAt(0) }}{{ grade.student.lastName.charAt(0) }}
-                    </div>
+                    </span>
                   </div>
-                  <div class="ml-4">
-                    <div class="text-sm font-medium text-gray-900 dark:text-white">
+                  <div class="grid gap-1">
+                    <p class="text-sm font-medium leading-none">
                       {{ grade.student.firstName }} {{ grade.student.lastName }}
-                    </div>
-                    <div class="text-sm text-gray-500 dark:text-gray-400">{{ grade.student.studentId }}</div>
+                    </p>
+                    <p class="text-sm text-muted-foreground">{{ grade.student.studentId }}</p>
                   </div>
                 </div>
               </td>
-              <td class="px-6 py-4 whitespace-nowrap">
-                <div class="text-sm font-medium text-gray-900 dark:text-white">{{ grade.course.courseCode }}</div>
-                <div class="text-sm text-gray-500 dark:text-gray-400">{{ grade.course.courseName }}</div>
+              <td class="p-4 align-middle">
+                <div class="grid gap-1">
+                  <p class="text-sm font-medium">{{ grade.course.courseCode }}</p>
+                  <p class="text-sm text-muted-foreground">{{ grade.course.courseName }}</p>
+                </div>
               </td>
-              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
-                {{ grade.examType || 'N/A' }}
+              <td class="p-4 align-middle">
+                <span class="text-sm">{{ grade.examType || 'N/A' }}</span>
               </td>
-              <td class="px-6 py-4 whitespace-nowrap">
-                <div class="text-sm font-medium text-gray-900 dark:text-white">
-                  <span v-if="grade.gradeValue !== null">{{ grade.gradeValue }}%</span>
-                  <span v-if="grade.letterGrade" class="ml-2 px-2 py-1 text-xs font-semibold rounded-full"
+              <td class="p-4 align-middle">
+                <div class="flex items-center gap-2">
+                  <span v-if="grade.gradeValue !== null" class="text-sm font-medium">{{ grade.gradeValue }}%</span>
+                  <span v-if="grade.letterGrade" class="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold"
                     :class="getGradeColor(grade.letterGrade)">
                     {{ grade.letterGrade }}
                   </span>
                 </div>
-                <div v-if="grade.gpaPoints" class="text-sm text-gray-500 dark:text-gray-400">
+                <div v-if="grade.gpaPoints" class="text-sm text-muted-foreground">
                   GPA: {{ grade.gpaPoints }}
                 </div>
               </td>
-              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
-                {{ grade.examDate ? formatDate(grade.examDate) : 'N/A' }}
+              <td class="p-4 align-middle">
+                <span class="text-sm text-muted-foreground">
+                  {{ grade.examDate ? formatDate(grade.examDate) : 'N/A' }}
+                </span>
               </td>
-              <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                <button
-                  @click="editGrade(grade)"
-                  class="text-blue-600 hover:text-blue-900 mr-3"
-                >
-                  Edit
-                </button>
-                <button
-                  @click="deleteGrade(grade)"
-                  class="text-red-600 hover:text-red-900"
-                >
-                  Delete
-                </button>
+              <td class="p-4 align-middle text-right">
+                <div class="flex items-center justify-end gap-2">
+                  <button
+                    @click="editGrade(grade)"
+                    class="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-8 px-3"
+                  >
+                    Edit
+                  </button>
+                  <button
+                    @click="deleteGrade(grade)"
+                    class="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-8 px-3 text-destructive hover:text-destructive"
+                  >
+                    Delete
+                  </button>
+                </div>
               </td>
             </tr>
           </tbody>
@@ -142,21 +154,26 @@
     </div>
 
     <!-- Create/Edit Grade Modal -->
-    <div v-if="showCreateModal || showEditModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <div class="bg-white dark:bg-gray-800 rounded-lg p-6 w-full max-w-lg max-h-[90vh] overflow-y-auto">
-        <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-4">
-          {{ showCreateModal ? 'Add New Grade' : 'Edit Grade' }}
-        </h3>
+    <div v-if="showCreateModal || showEditModal" class="fixed inset-0 z-50 bg-background/80 backdrop-blur-sm flex items-center justify-center p-4">
+      <div class="relative bg-background border border-border rounded-lg shadow-lg w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+        <div class="flex flex-col space-y-1.5 p-6">
+          <h3 class="text-lg font-semibold leading-none tracking-tight">
+            {{ showCreateModal ? 'Add New Grade' : 'Edit Grade' }}
+          </h3>
+          <p class="text-sm text-muted-foreground">
+            {{ showCreateModal ? 'Add a new grade record for a student.' : 'Update the grade information.' }}
+          </p>
+        </div>
         
-        <form @submit.prevent="showCreateModal ? createGrade() : updateGrade()">
-          <div class="space-y-4">
+        <form @submit.prevent="showCreateModal ? createGrade() : updateGrade()" class="p-6 pt-0">
+          <div class="grid gap-6">
             <div class="grid grid-cols-2 gap-4">
-              <div>
-                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Student</label>
+              <div class="space-y-2">
+                <label class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">Student *</label>
                 <select
                   v-model="gradeForm.studentId"
                   required
-                  class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
+                  class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                 >
                   <option value="">Select Student</option>
                   <option v-for="student in students" :key="student.id" :value="student.id">
@@ -164,12 +181,12 @@
                   </option>
                 </select>
               </div>
-              <div>
-                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Course</label>
+              <div class="space-y-2">
+                <label class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">Course *</label>
                 <select
                   v-model="gradeForm.courseId"
                   required
-                  class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
+                  class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                 >
                   <option value="">Select Course</option>
                   <option v-for="course in courses" :key="course.id" :value="course.id">
@@ -180,22 +197,23 @@
             </div>
             
             <div class="grid grid-cols-3 gap-4">
-              <div>
-                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Grade Value (%)</label>
+              <div class="space-y-2">
+                <label class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">Grade Value (%)</label>
                 <input
                   v-model="gradeForm.gradeValue"
                   type="number"
                   min="0"
                   max="100"
                   step="0.1"
-                  class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
+                  placeholder="85.5"
+                  class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                 >
               </div>
-              <div>
-                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Letter Grade</label>
+              <div class="space-y-2">
+                <label class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">Letter Grade</label>
                 <select
                   v-model="gradeForm.letterGrade"
-                  class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
+                  class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                 >
                   <option value="">Select Grade</option>
                   <option value="A+">A+</option>
@@ -212,62 +230,63 @@
                   <option value="F">F</option>
                 </select>
               </div>
-              <div>
-                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">GPA Points</label>
+              <div class="space-y-2">
+                <label class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">GPA Points</label>
                 <input
                   v-model="gradeForm.gpaPoints"
                   type="number"
                   min="0"
                   max="4"
                   step="0.1"
-                  class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
+                  placeholder="3.7"
+                  class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                 >
               </div>
             </div>
             
             <div class="grid grid-cols-2 gap-4">
-              <div>
-                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Exam Type</label>
+              <div class="space-y-2">
+                <label class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">Exam Type</label>
                 <input
                   v-model="gradeForm.examType"
                   type="text"
                   placeholder="e.g., Midterm, Final, Quiz, Assignment"
-                  class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
+                  class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                 >
               </div>
-              <div>
-                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Exam Date</label>
+              <div class="space-y-2">
+                <label class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">Exam Date</label>
                 <input
                   v-model="gradeForm.examDate"
                   type="date"
-                  class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
+                  class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                 >
               </div>
             </div>
             
-            <div>
-              <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Notes</label>
+            <div class="space-y-2">
+              <label class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">Notes</label>
               <textarea
                 v-model="gradeForm.notes"
                 rows="3"
                 placeholder="Additional notes about this grade..."
-                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
+                class="flex min-h-[80px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
               ></textarea>
             </div>
           </div>
           
-          <div class="flex justify-end space-x-3 mt-6">
+          <div class="flex items-center justify-end space-x-2 pt-6">
             <button
               type="button"
               @click="closeModal"
-              class="px-4 py-2 text-gray-700 border border-gray-300 rounded-md hover:bg-gray-50"
+              class="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-10 px-4 py-2"
             >
               Cancel
             </button>
             <button
               type="submit"
               :disabled="submitting"
-              class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50"
+              class="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2"
             >
               {{ submitting ? 'Saving...' : (showCreateModal ? 'Create Grade' : 'Update Grade') }}
             </button>
@@ -518,12 +537,12 @@ const formatDate = (dateString) => {
 }
 
 const getGradeColor = (letterGrade) => {
-  if (['A+', 'A', 'A-'].includes(letterGrade)) return 'bg-green-100 text-green-800'
-  if (['B+', 'B', 'B-'].includes(letterGrade)) return 'bg-blue-100 text-blue-800'
-  if (['C+', 'C', 'C-'].includes(letterGrade)) return 'bg-yellow-100 text-yellow-800'
-  if (['D+', 'D'].includes(letterGrade)) return 'bg-orange-100 text-orange-800'
-  if (letterGrade === 'F') return 'bg-red-100 text-red-800'
-  return 'bg-gray-100 text-gray-800'
+  if (['A+', 'A', 'A-'].includes(letterGrade)) return 'bg-green-100 text-green-700 border-green-200'
+  if (['B+', 'B', 'B-'].includes(letterGrade)) return 'bg-blue-100 text-blue-700 border-blue-200'
+  if (['C+', 'C', 'C-'].includes(letterGrade)) return 'bg-yellow-100 text-yellow-700 border-yellow-200'
+  if (['D+', 'D'].includes(letterGrade)) return 'bg-orange-100 text-orange-700 border-orange-200'
+  if (letterGrade === 'F') return 'bg-red-100 text-red-700 border-red-200'
+  return 'bg-muted text-muted-foreground border-border'
 }
 
 // Debounced fetch for search
