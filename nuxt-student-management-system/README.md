@@ -320,3 +320,30 @@ If you have any questions or need help, please:
 
 **Built with ❤️ using Nuxt 4**
 
+
+### Troubleshoot
+
+1. Check if API is working
+```
+(try-implement-with-nuxt*=) % curl -X POST http://localhost:3000/api/auth/login -H "Content-Type: application/json" -d '{"username": "admin", "password": "admin123"}' | jq .
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+100   593  100   548  100    45   7303    599 --:--:-- --:--:-- --:--:--  7906
+{
+  "success": true,
+  "data": {
+    "user": {
+      "id": 1,
+      "username": "admin",
+      "email": "admin@sms.edu",
+      "name": "System Administrator",
+      "role": "ADMIN",
+      "isActive": true,
+      "createdAt": "2025-08-04T15:46:12.406Z",
+      "updatedAt": "2025-08-04T15:46:12.406Z"
+    },
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEsInVzZXJuYW1lIjoiYWRtaW4iLCJyb2xlIjoiQURNSU4iLCJpYXQiOjE3NTQ0MDc0NjEsImV4cCI6MTc1NTAxMjI2MX0.f3XD4Vszlj0P3Vu4NiuxJDN1390A6x-fjhgWvQlxG3k"
+  },
+  "message": "Login successful"
+}
+```
