@@ -28,6 +28,9 @@ export default defineNuxtConfig({
   nitro: {
     experimental: {
       wasm: true
+    },
+    prerender: {
+      autoSubfolderIndex: false
     }
   }
 })
