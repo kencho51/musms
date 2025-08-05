@@ -7,7 +7,7 @@
           Student Management System
         </h1>
         <p class="text-xl text-gray-600 dark:text-gray-300 mb-8 max-w-2xl mx-auto">
-          A comprehensive platform for managing students, courses, grades, and academic records with modern tools and intuitive design.
+          A comprehensive platform for managing students, courses, grades, and academic records.
         </p>
         
         <!-- CTA Buttons -->
