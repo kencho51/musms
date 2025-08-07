@@ -7,7 +7,7 @@ export function getPrisma(env) {
   if (prisma) return prisma
 
   // Development: Use local SQLite file
-  if (process.env.NODE_ENV !== 'prod') {
+  if (process.env.NODE_ENV !== 'production') {
     console.log('🔧 Using local SQLite database (file:./prisma/dev.db) for development')
     prisma = new PrismaClient({
       datasources: {
