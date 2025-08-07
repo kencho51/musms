@@ -1,8 +1,6 @@
 import bcrypt from 'bcryptjs'
 import jwt from 'jsonwebtoken'
-import { PrismaClient } from '@prisma/client'
-
-const prisma = new PrismaClient()
+import { getDB } from '../../utils/db.js'
 
 export default defineEventHandler(async (event) => {
   try {
@@ -15,6 +13,9 @@ export default defineEventHandler(async (event) => {
         statusMessage: 'Username and password are required'
       })
     }
+
+    // Get database instance
+    const prisma = getDB(event)
 
     // Find user by username
     const user = await prisma.user.findUnique({
@@ -79,7 +80,7 @@ export default defineEventHandler(async (event) => {
       },
       message: 'Login successful'
     }
-  } catch (error: any) {
+  } catch (error) {
     console.error('Login error:', error)
     
     if (error.statusCode) {
@@ -90,7 +91,5 @@ export default defineEventHandler(async (event) => {
       statusCode: 500,
       statusMessage: 'Internal server error'
     })
-  } finally {
-    await prisma.$disconnect()
   }
-}) 
+})

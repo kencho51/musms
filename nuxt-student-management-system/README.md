@@ -1,349 +1,215 @@
-# 🎓 Nuxt 4 Student Management System
+# 🎓 Student Management System
 
-A comprehensive Student Management System built with **Nuxt 4**, featuring modern UI components, authentication, data management, and real-time functionality.
+A modern, full-stack Student Management System built with **Nuxt 4** and deployed on **Cloudflare Pages** with **D1 database**.
 
 ## ✨ Features
 
-### 🔐 **Authentication & Authorization**
-- JWT-based authentication
-- Role-based access control (Admin, Teacher, Student)
-- Secure cookie management
-- Protected routes and middleware
-
-### 👥 **User Management**
-- User registration and login
-- Profile management
-- Role-based permissions
-- Admin user management interface
-
-### 🎓 **Student Management**
-- Student registration and profiles
-- Academic information tracking
-- Enrollment management
-- Student search and filtering
-
-### 📚 **Course Management**
-- Course creation and editing
-- Semester and year organization
-- Instructor assignment
-- Capacity management
-
-### 📊 **Grade Management**
-- Grade recording and calculation
-- GPA tracking
-- Multiple assessment types
-- Grade analytics
-
-### 📈 **Dashboard & Analytics**
-- Real-time statistics
-- Interactive charts
-- Recent activity feeds
-- Quick action buttons
-
-### 🎨 **Modern UI/UX**
-- Responsive design
-- Dark/Light theme support
-- Accessible components
-- Smooth animations
-- Toast notifications
+- 🔐 **Authentication** - JWT-based auth with role-based access control (Admin, Teacher, Student)
+- 👥 **User Management** - Complete CRUD operations for users
+- 🎓 **Student Management** - Student profiles and academic tracking
+- 📚 **Course Management** - Course creation and management
+- 📊 **Grade Management** - Grade recording and analytics
+- 🎨 **Modern UI** - Responsive design with Tailwind CSS
+- ☁️ **Cloud-First** - Built for Cloudflare Pages with D1 database
 
 ## 🚀 Tech Stack
 
-### **Frontend**
-- **[Nuxt 4](https://nuxt.com/)** - The Intuitive Vue Framework
-- **[Vue 3](https://vuejs.org/)** - Progressive JavaScript Framework
-- **[TypeScript](https://www.typescriptlang.org/)** - Type-safe JavaScript
-- **[Tailwind CSS](https://tailwindcss.com/)** - Utility-first CSS framework
-- **[Nuxt UI](https://ui.nuxt.com/)** - Beautiful & accessible components
-- **[Pinia](https://pinia.vuejs.org/)** - State management
-- **[VeeValidate](https://vee-validate.logaretm.com/)** - Form validation
-- **[Chart.js](https://www.chartjs.org/)** - Interactive charts
+- **Frontend & Backend**: [Nuxt 4](https://nuxt.com/) (Full-stack framework)
+- **Database**: [Cloudflare D1](https://developers.cloudflare.com/d1/) (SQLite-compatible)
+- **ORM**: [Prisma](https://www.prisma.io/) with D1 adapter
+- **Styling**: [Tailwind CSS](https://tailwindcss.com/)
+- **Deployment**: [Cloudflare Pages](https://pages.cloudflare.com/)
+- **Language**: JavaScript (minimal TypeScript)
 
-### **Backend**
-- **[Nitro](https://nitro.unjs.io/)** - Server engine
-- **[Prisma](https://www.prisma.io/)** - Database ORM
-- **[SQLite](https://www.sqlite.org/)** - Database (development)
-- **[bcryptjs](https://www.npmjs.com/package/bcryptjs)** - Password hashing
-- **[jsonwebtoken](https://www.npmjs.com/package/jsonwebtoken)** - JWT tokens
+## 🛠️ Local Development
 
-### **Development Tools**
-- **[ESLint](https://eslint.org/)** - Code linting
-- **[Vitest](https://vitest.dev/)** - Unit testing
-- **[TypeScript](https://www.typescriptlang.org/)** - Type checking
+### Prerequisites
+- Node.js 18+
+- Wrangler CLI (`npm install -g wrangler`)
+
+### Setup
+
+1. **Clone and install**:
+```bash
+git clone <your-repo>
+cd nuxt-student-management-system
+npm install
+```
+
+2. **Environment setup**:
+```bash
+# Create .env file
+cp .env.example .env
+# Edit .env with your values
+```
+
+3. **Database setup**:
+```bash
+# Generate Prisma client
+npm run db:generate
+
+# Create local database
+npm run db:push
+
+# Seed with demo data
+npm run db:seed
+```
+
+4. **Start development server**:
+```bash
+npm run dev
+```
+
+Visit `http://localhost:3000`
+
+### Demo Credentials
+- **Admin**: `admin` / `admin123`
+- **Teacher**: `teacher` / `teacher123`
+- **Student**: `student` / `student123`
+
+## ☁️ Cloudflare Deployment
+
+### 1. Create D1 Database
+
+```bash
+# Login to Cloudflare
+wrangler login
+
+# Create D1 database
+wrangler d1 create student-management-db
+
+# Update wrangler.toml with your database ID
+```
+
+### 2. Deploy to Pages
+
+#### Option A: Using Wrangler (Direct Upload)
+```bash
+# Build for production
+npm run build
+
+# Deploy to Pages
+npm run deploy
+```
+
+#### Option B: Git Integration
+1. Push code to GitHub
+2. Connect repository in [Cloudflare Pages dashboard](https://dash.cloudflare.com/pages)
+3. Configure build settings:
+   - **Build command**: `npm run build`
+   - **Build output**: `dist`
+   - **Framework preset**: Nuxt.js
+
+### 3. Configure D1 Binding
+
+In Cloudflare Pages dashboard:
+1. Go to your Pages project
+2. Settings → Functions
+3. Add D1 database binding:
+   - **Variable name**: `DB`
+   - **D1 database**: Select your database
+
+### 4. Set Environment Variables
+
+In Pages dashboard → Settings → Environment variables:
+```
+JWT_SECRET=your-production-secret-key
+```
+
+### 5. Run Database Migrations
+
+```bash
+# Apply schema to D1
+wrangler d1 execute student-management-db --file=./prisma/migrations/001_init/migration.sql
+
+# Or generate migration
+npx prisma migrate diff --from-empty --to-schema-datamodel prisma/schema.prisma --script > migration.sql
+wrangler d1 execute student-management-db --file=migration.sql
+```
 
 ## 📁 Project Structure
 
 ```
 nuxt-student-management-system/
-├── app/                          # Nuxt 4 app directory
-│   ├── assets/                   # Static assets
-│   │   ├── css/                  # Global styles
-│   │   └── images/               # Images
-│   ├── components/               # Vue components
-│   │   ├── charts/               # Chart components
-│   │   ├── forms/                # Form components
-│   │   ├── layout/               # Layout components
-│   │   └── ui/                   # UI components
-│   ├── composables/              # Vue composables
-│   ├── layouts/                  # Nuxt layouts
-│   ├── middleware/               # Route middleware
-│   ├── pages/                    # Application pages
-│   │   ├── auth/                 # Authentication pages
-│   │   ├── dashboard/            # Dashboard pages
-│   │   ├── students/             # Student management
-│   │   ├── courses/              # Course management
-│   │   ├── grades/               # Grade management
-│   │   └── users/                # User management
-│   ├── plugins/                  # Nuxt plugins
-│   ├── server/                   # Server-side code
-│   │   └── api/                  # API routes
-│   │       ├── auth/             # Authentication API
-│   │       ├── students/         # Students API
-│   │       ├── courses/          # Courses API
-│   │       ├── grades/           # Grades API
-│   │       └── users/            # Users API
-│   ├── stores/                   # Pinia stores
-│   ├── types/                    # TypeScript types
-│   ├── utils/                    # Utility functions
-│   └── app.vue                   # Root component
-├── public/                       # Public assets
-├── nuxt.config.ts               # Nuxt configuration
-├── package.json                 # Dependencies
-└── tsconfig.json               # TypeScript config
+├── app/                      # Nuxt app directory
+│   ├── components/           # Vue components
+│   ├── layouts/             # App layouts
+│   ├── pages/               # File-based routes
+│   ├── stores/              # Pinia stores
+│   ├── utils/               # Utility functions
+│   └── app.vue              # Root component
+├── server/                  # Nitro server
+│   └── api/                 # API routes
+├── prisma/                  # Database schema & migrations
+├── wrangler.toml            # Cloudflare configuration
+└── nuxt.config.ts           # Nuxt configuration
 ```
 
-## 🛠️ Installation & Setup
+## 🔧 Key Files
 
-### **Prerequisites**
-- Node.js 18+ 
-- npm or yarn or pnpm
+- **`wrangler.toml`** - Cloudflare D1 database binding configuration
+- **`nuxt.config.ts`** - Nuxt config with Cloudflare Pages preset
+- **`app/utils/db.js`** - Database connection utility (handles both local SQLite and D1)
+- **`prisma/schema.prisma`** - Database schema with D1 adapter support
 
-### **1. Clone the Repository**
+## 📚 API Routes
+
+### Authentication
+- `POST /api/auth/login` - User login
+- `POST /api/auth/register` - User registration
+
+### Users (Admin only)
+- `GET /api/users` - List users
+- `POST /api/users` - Create user
+- `PUT /api/users/[id]` - Update user
+- `DELETE /api/users/[id]` - Delete user
+
+### Students
+- `GET /api/students` - List students
+- `POST /api/students` - Create student
+- `PUT /api/students/[id]` - Update student
+- `DELETE /api/students/[id]` - Delete student
+
+### Courses
+- `GET /api/courses` - List courses
+- `POST /api/courses` - Create course
+- `PUT /api/courses/[id]` - Update course
+- `DELETE /api/courses/[id]` - Delete course
+
+### Grades
+- `GET /api/grades` - List grades
+- `POST /api/grades` - Create grade
+- `PUT /api/grades/[id]` - Update grade
+- `DELETE /api/grades/[id]` - Delete grade
+
+## 🧪 Development Commands
+
 ```bash
-git clone <repository-url>
-cd nuxt-student-management-system
-```
+# Development
+npm run dev                  # Start dev server
+npm run build               # Build for production
+npm run preview             # Preview production build
 
-### **2. Install Dependencies**
-```bash
-npm install
-# or
-yarn install
-# or
-pnpm install
-```
-
-### **3. Environment Configuration**
-Create a `.env` file in the root directory:
-
-```env
 # Database
-DATABASE_URL="file:./dev.db"
+npm run db:generate         # Generate Prisma client
+npm run db:push            # Push schema to database
+npm run db:seed            # Seed with demo data
+npm run db:studio          # Open Prisma Studio
+npm run db:reset           # Reset and seed database
 
-# JWT Secret
-JWT_SECRET="your-super-secret-jwt-key-change-in-production"
-
-# API Configuration
-API_BASE_URL="http://localhost:3000/api"
-
-# App Configuration
-NUXT_PUBLIC_APP_NAME="Student Management System"
-NUXT_PUBLIC_APP_VERSION="1.0.0"
+# Deployment
+npm run deploy             # Deploy to Cloudflare Pages
+npm run cf:dev             # Test with Cloudflare D1 locally
 ```
 
-### **4. Database Setup**
-```bash
-# Initialize Prisma
-npx prisma init
+## 🔗 Useful Links
 
-# Generate Prisma client
-npx prisma generate
-
-# Run database migrations
-npx prisma db push
-
-# Seed database (optional)
-npx prisma db seed
-```
-
-### **5. Development Server**
-```bash
-npm run dev
-```
-
-Visit `http://localhost:3000` to see the application.
-
-## 🏗️ Build & Deployment
-
-### **Production Build**
-```bash
-npm run build
-```
-
-### **Preview Production Build**
-```bash
-npm run preview
-```
-
-### **Static Generation**
-```bash
-npm run generate
-```
-
-## 🧪 Testing
-
-### **Run Tests**
-```bash
-npm run test
-```
-
-### **Run Tests in Watch Mode**
-```bash
-npm run test:watch
-```
-
-### **Type Checking**
-```bash
-npm run typecheck
-```
-
-### **Linting**
-```bash
-npm run lint
-npm run lint:fix
-```
-
-## 📊 Key Features Overview
-
-### **Dashboard**
-- 📈 Real-time statistics cards
-- 📊 Interactive charts (enrollment trends, GPA distribution)
-- 🔄 Recent activities feed
-- ⚡ Quick action buttons
-- 🎯 Role-based content
-
-### **Student Management**
-- ➕ Add/Edit/Delete students
-- 🔍 Search and filter capabilities
-- 📋 Detailed student profiles
-- 📊 Academic performance tracking
-- 📅 Enrollment history
-
-### **Course Management**
-- 📚 Course creation and editing
-- 👨‍🏫 Instructor assignment
-- 📊 Enrollment tracking
-- 🗓️ Semester organization
-- 📈 Course analytics
-
-### **Grade Management**
-- 📝 Grade entry and calculation
-- 🎯 Multiple assessment types
-- 📊 GPA calculation
-- 📈 Performance analytics
-- 📋 Grade reports
-
-### **User Management** (Admin Only)
-- 👥 User creation and management
-- 🔐 Role assignment
-- ✅ Account activation/deactivation
-- 🛡️ Permission management
-
-## 🎨 UI/UX Features
-
-### **Design System**
-- 🎨 Consistent color palette
-- 📱 Responsive design
-- ♿ Accessible components
-- 🌙 Dark/Light theme
-- ✨ Smooth animations
-
-### **Navigation**
-- 📱 Responsive sidebar
-- 🍞 Breadcrumb navigation
-- 🔍 Global search
-- 🔔 Notification system
-- 👤 User profile menu
-
-### **Forms**
-- ✅ Real-time validation
-- 🎯 Type-safe form handling
-- 💾 Auto-save functionality
-- 🔄 Loading states
-- ❌ Error handling
-
-## 🔒 Security Features
-
-- 🔐 JWT-based authentication
-- 🛡️ Role-based access control
-- 🍪 Secure cookie management
-- 🚫 Protected API routes
-- 🔒 Input validation and sanitization
-- 🛡️ CSRF protection
-
-## 🌟 Performance Optimizations
-
-- ⚡ Server-side rendering (SSR)
-- 🎯 Code splitting
-- 🔗 Link prefetching
-- 📦 Asset optimization
-- 🗜️ Image optimization
-- 📊 Bundle analysis
-
-## 🤝 Contributing
-
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your changes (`git commit -m 'Add AmazingFeature'`)
-4. Push to the branch (`git push origin feature/AmazingFeature`)
-5. Open a Pull Request
+- [Nuxt 4 Documentation](https://nuxt.com/)
+- [Cloudflare Pages Documentation](https://developers.cloudflare.com/pages/)
+- [Cloudflare D1 Documentation](https://developers.cloudflare.com/d1/)
+- [Prisma Documentation](https://www.prisma.io/docs/)
+- [Wrangler CLI Documentation](https://developers.cloudflare.com/workers/wrangler/)
 
 ## 📄 License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-## 🙏 Acknowledgments
-
-- [Nuxt.js Team](https://nuxt.com/) for the amazing framework
-- [Vue.js Team](https://vuejs.org/) for the reactive framework
-- [Tailwind CSS](https://tailwindcss.com/) for the utility-first CSS
-- [Nuxt UI](https://ui.nuxt.com/) for the beautiful components
-
-## 📞 Support
-
-If you have any questions or need help, please:
-- 📧 Open an issue on GitHub
-- 💬 Join our Discord community
-- 📖 Check the documentation
-
----
-
-**Built with ❤️ using Nuxt 4**
-
-
-### Troubleshoot
-
-1. Check if API is working
-```
-(try-implement-with-nuxt*=) % curl -X POST http://localhost:3000/api/auth/login -H "Content-Type: application/json" -d '{"username": "admin", "password": "admin123"}' | jq .
-  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
-                                 Dload  Upload   Total   Spent    Left  Speed
-100   593  100   548  100    45   7303    599 --:--:-- --:--:-- --:--:--  7906
-{
-  "success": true,
-  "data": {
-    "user": {
-      "id": 1,
-      "username": "admin",
-      "email": "admin@sms.edu",
-      "name": "System Administrator",
-      "role": "ADMIN",
-      "isActive": true,
-      "createdAt": "2025-08-04T15:46:12.406Z",
-      "updatedAt": "2025-08-04T15:46:12.406Z"
-    },
-    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEsInVzZXJuYW1lIjoiYWRtaW4iLCJyb2xlIjoiQURNSU4iLCJpYXQiOjE3NTQ0MDc0NjEsImV4cCI6MTc1NTAxMjI2MX0.f3XD4Vszlj0P3Vu4NiuxJDN1390A6x-fjhgWvQlxG3k"
-  },
-  "message": "Login successful"
-}
-```
+MIT License

@@ -1,7 +1,10 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
-  compatibilityDate: '2025-07-15',
+  compatibilityDate: '2025-01-15',
   devtools: { enabled: true },
+  future: {
+    compatibilityVersion: 4
+  },
   
   // Source directory for frontend code (pages, components, etc.)
   srcDir: 'app/',
@@ -11,26 +14,25 @@ export default defineNuxtConfig({
   
   // Modules
   modules: [
-    '@nuxtjs/tailwindcss'
+    '@nuxtjs/tailwindcss',
+    'nitro-cloudflare-dev'
   ],
   
   // Runtime config
   runtimeConfig: {
-    jwtSecret: process.env.JWT_SECRET || 'your-secret-key',
-    databaseUrl: process.env.DATABASE_URL || 'file:./prisma/dev.db',
+    jwtSecret: process.env.JWT_SECRET || 'your-secret-key-change-in-production',
     public: {
       appName: 'Student Management System',
       appVersion: '1.0.0'
     }
   },
   
-  // Nitro configuration for server routes
+  // Nitro configuration for Cloudflare Pages
   nitro: {
+    preset: 'cloudflare-pages',
     experimental: {
       wasm: true
     },
-    prerender: {
-      autoSubfolderIndex: false
-    }
+    compatibilityDate: '2024-11-18'
   }
 })

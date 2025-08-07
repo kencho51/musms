@@ -1,8 +1,6 @@
 import bcrypt from 'bcryptjs'
 import jwt from 'jsonwebtoken'
-import { PrismaClient } from '@prisma/client'
-
-const prisma = new PrismaClient()
+import { getDB } from '../../utils/db.js'
 
 export default defineEventHandler(async (event) => {
   try {
@@ -32,6 +30,9 @@ export default defineEventHandler(async (event) => {
         statusMessage: 'Password must be at least 6 characters long'
       })
     }
+
+    // Get database instance
+    const prisma = getDB(event)
 
     // Check if username already exists
     const existingUserByUsername = await prisma.user.findUnique({
@@ -102,7 +103,7 @@ export default defineEventHandler(async (event) => {
       },
       message: 'Account created successfully'
     }
-  } catch (error: any) {
+  } catch (error) {
     console.error('Registration error:', error)
     
     if (error.statusCode) {
@@ -113,7 +114,5 @@ export default defineEventHandler(async (event) => {
       statusCode: 500,
       statusMessage: 'Internal server error'
     })
-  } finally {
-    await prisma.$disconnect()
   }
 }) 

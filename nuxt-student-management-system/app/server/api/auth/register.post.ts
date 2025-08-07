@@ -1,21 +1,29 @@
 import bcrypt from 'bcryptjs'
 import jwt from 'jsonwebtoken'
-import { PrismaClient } from '@prisma/client'
-
-const prisma = new PrismaClient()
+import { getDB } from '~/utils/db.js'
 
 export default defineEventHandler(async (event) => {
   try {
-    const { name, username, email, password } = await readBody(event)
+    const { username, email, password, name } = await readBody(event)
 
     // Validate input
-    if (!name || !username || !email || !password) {
+    if (!username || !email || !password) {
       throw createError({
         statusCode: 400,
-        statusMessage: 'All fields are required'
+        statusMessage: 'Username, email, and password are required'
       })
     }
 
+    // Validate email format
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+    if (!emailRegex.test(email)) {
+      throw createError({
+        statusCode: 400,
+        statusMessage: 'Invalid email format'
+      })
+    }
+
+    // Validate password length
     if (password.length < 6) {
       throw createError({
         statusCode: 400,
@@ -23,39 +31,42 @@ export default defineEventHandler(async (event) => {
       })
     }
 
+    // Get database instance
+    const prisma = getDB(event)
+
     // Check if username already exists
-    const existingUsername = await prisma.user.findUnique({
+    const existingUserByUsername = await prisma.user.findUnique({
       where: { username }
     })
 
-    if (existingUsername) {
+    if (existingUserByUsername) {
       throw createError({
-        statusCode: 409,
+        statusCode: 400,
         statusMessage: 'Username already exists'
       })
     }
 
     // Check if email already exists
-    const existingEmail = await prisma.user.findUnique({
+    const existingUserByEmail = await prisma.user.findUnique({
       where: { email }
     })
 
-    if (existingEmail) {
+    if (existingUserByEmail) {
       throw createError({
-        statusCode: 409,
+        statusCode: 400,
         statusMessage: 'Email already exists'
       })
     }
 
     // Hash password
-    const hashedPassword = await bcrypt.hash(password, 12)
+    const hashedPassword = await bcrypt.hash(password, 10)
 
     // Create user
     const user = await prisma.user.create({
       data: {
-        name,
         username,
         email,
+        name: name || username,
         password: hashedPassword,
         role: 'STUDENT', // Default role
         isActive: true
@@ -92,7 +103,7 @@ export default defineEventHandler(async (event) => {
       },
       message: 'Account created successfully'
     }
-  } catch (error: any) {
+  } catch (error) {
     console.error('Registration error:', error)
     
     if (error.statusCode) {
@@ -103,7 +114,5 @@ export default defineEventHandler(async (event) => {
       statusCode: 500,
       statusMessage: 'Internal server error'
     })
-  } finally {
-    await prisma.$disconnect()
   }
 })
