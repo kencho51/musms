@@ -14,7 +14,9 @@
     "db:studio": "prisma studio",
     "db:reset": "prisma db push --force-reset && npm run db:seed",
     "deploy": "wrangler pages deploy dist",
-    "cf:dev": "wrangler pages dev dist --d1 DB"
+    "cf:dev": "wrangler pages dev dist --d1 DB",
+    "deploy:d1": "./scripts/deploy-d1.sh",
+    "deploy:full": "npm run build && npm run deploy"
   },
   "prisma": {
     "seed": "node prisma/seed.js"

@@ -6,15 +6,21 @@ let prisma = null
 export function getPrisma(env) {
   if (prisma) return prisma
 
-  // Always use local SQLite in development
-  if (process.env.NODE_ENV !== 'production') {
-    console.log('🔧 Using local SQLite database for development')
-    prisma = new PrismaClient()
+  // Development: Use local SQLite file
+  if (process.env.NODE_ENV !== 'prod') {
+    console.log('🔧 Using local SQLite database (file:./prisma/dev.db) for development')
+    prisma = new PrismaClient({
+      datasources: {
+        db: {
+          url: 'file:./dev.db'
+        }
+      }
+    })
     return prisma
   }
 
-  // For production (Cloudflare D1)
-  console.log('☁️ Using Cloudflare D1 database for production')
+  // Production: Use Cloudflare D1 (test-musms)
+  console.log('☁️ Using Cloudflare D1 database (test-musms) for production')
   const adapter = new PrismaD1(env.DB)
   prisma = new PrismaClient({ adapter })
   

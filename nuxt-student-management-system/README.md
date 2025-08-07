@@ -73,10 +73,10 @@ Visit `http://localhost:3000`
 
 ```bash
 # Login to Cloudflare
-wrangler login
+npx wrangler login
 
 # Create D1 database
-wrangler d1 create student-management-db
+npx wrangler d1 create student-management-db
 
 # Update wrangler.toml with your database ID
 ```
@@ -116,15 +116,53 @@ In Pages dashboard → Settings → Environment variables:
 JWT_SECRET=your-production-secret-key
 ```
 
-### 5. Run Database Migrations
+### 5. Apply Database Migrations
 
 ```bash
-# Apply schema to D1
-wrangler d1 execute student-management-db --file=./prisma/migrations/001_init/migration.sql
+# Apply schema and seed data
+npx wrangler d1 execute test-musms --file=migrations/001_initial_schema.sql --remote
+npx wrangler d1 execute test-musms --file=migrations/002_seed_demo_data.sql --remote
 
-# Or generate migration
-npx prisma migrate diff --from-empty --to-schema-datamodel prisma/schema.prisma --script > migration.sql
-wrangler d1 execute student-management-db --file=migration.sql
+# Or use the automated script
+npm run deploy:d1
+```
+
+## 🗄️ Database Migrations
+
+All database migrations are in the `migrations/` directory:
+
+- **`001_initial_schema.sql`** - Creates all tables and indexes
+- **`002_seed_demo_data.sql`** - Inserts demo users and sample data
+- **`README.md`** - Detailed migration documentation
+
+### **Quick Deploy (Automated)**
+
+```bash
+# Deploy D1 database with schema and data
+npm run deploy:d1
+```
+
+### **Manual Migration Commands**
+
+```bash
+# Apply schema
+wrangler d1 execute student-management-db --file=migrations/001_initial_schema.sql
+
+# Seed demo data  
+wrangler d1 execute student-management-db --file=migrations/002_seed_demo_data.sql
+
+# Verify deployment
+wrangler d1 execute student-management-db --command="SELECT username, role FROM users;"
+```
+
+### **Generate New Migrations**
+
+```bash
+# When updating schema
+npx prisma migrate diff --from-empty --to-schema-datamodel prisma/schema.prisma --script > migrations/003_your_changes.sql
+
+# Apply to D1
+wrangler d1 execute student-management-db --file=migrations/003_your_changes.sql
 ```
 
 ## 📁 Project Structure
@@ -139,8 +177,15 @@ nuxt-student-management-system/
 │   ├── utils/               # Utility functions
 │   └── app.vue              # Root component
 ├── server/                  # Nitro server
-│   └── api/                 # API routes
-├── prisma/                  # Database schema & migrations
+│   ├── api/                 # API routes
+│   └── utils/               # Server utilities (DB connection)
+├── migrations/              # D1 database migrations
+│   ├── 001_initial_schema.sql
+│   ├── 002_seed_demo_data.sql
+│   └── README.md            # Migration documentation
+├── scripts/                 # Deployment scripts
+│   └── deploy-d1.sh         # Automated D1 deployment
+├── prisma/                  # Database schema & local seed
 ├── wrangler.toml            # Cloudflare configuration
 └── nuxt.config.ts           # Nuxt configuration
 ```
@@ -198,7 +243,9 @@ npm run db:studio          # Open Prisma Studio
 npm run db:reset           # Reset and seed database
 
 # Deployment
+npm run deploy:d1          # Deploy D1 database (automated)
 npm run deploy             # Deploy to Cloudflare Pages
+npm run deploy:full        # Build and deploy everything
 npm run cf:dev             # Test with Cloudflare D1 locally
 ```
 
