@@ -1,6 +1,6 @@
-import bcrypt from 'bcryptjs'
 import jwt from 'jsonwebtoken'
 import { getDB } from '../../utils/db.js'
+import { verifyBcryptPassword } from '../../utils/crypto.js'
 
 export default defineEventHandler(async (event) => {
   try {
@@ -52,7 +52,7 @@ export default defineEventHandler(async (event) => {
     }
 
     // Verify password
-    const isPasswordValid = await bcrypt.compare(password, user.password)
+    const isPasswordValid = await verifyBcryptPassword(password, user.password)
     if (!isPasswordValid) {
       return {
         success: false,
