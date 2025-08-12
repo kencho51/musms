@@ -6,21 +6,13 @@ let prisma = null
 export function getPrisma(env) {
   if (prisma) return prisma
 
-  // Development: Use local SQLite file
-  if (process.env.NODE_ENV !== 'production') {
-    console.log('🔧 Using local SQLite database (file:./prisma/dev.db) for development')
-    prisma = new PrismaClient({
-      datasources: {
-        db: {
-          url: 'file:./dev.db'
-        }
-      }
-    })
-    return prisma
+  // Always use Cloudflare D1 database (test-musms)
+  console.log('☁️ Using Cloudflare D1 database (test-musms)')
+  
+  if (!env?.DB) {
+    throw new Error('D1 database binding not found. Make sure DB is configured in wrangler.toml and bound in your environment.')
   }
-
-  // Production: Use Cloudflare D1 (test-musms)
-  console.log('☁️ Using Cloudflare D1 database (test-musms) for production')
+  
   const adapter = new PrismaD1(env.DB)
   prisma = new PrismaClient({ adapter })
   

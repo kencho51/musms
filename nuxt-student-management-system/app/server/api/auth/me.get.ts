@@ -1,10 +1,9 @@
 import jwt from 'jsonwebtoken'
-import { PrismaClient } from '@prisma/client'
-
-const prisma = new PrismaClient()
+import { getDB } from '../../../../../server/utils/db'
 
 export default defineEventHandler(async (event) => {
   try {
+    const prisma = getDB(event)
     const authHeader = getHeader(event, 'authorization')
     
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
@@ -81,7 +80,5 @@ export default defineEventHandler(async (event) => {
       statusCode: 500,
       statusMessage: 'Internal server error'
     })
-  } finally {
-    await prisma.$disconnect()
   }
 })

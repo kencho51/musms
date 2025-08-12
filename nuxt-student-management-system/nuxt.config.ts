@@ -15,7 +15,8 @@ export default defineNuxtConfig({
   // Modules
   modules: [
     '@nuxtjs/tailwindcss',
-    'nitro-cloudflare-dev'
+    'nitro-cloudflare-dev',
+    '@nuxt/icon'
   ],
   
   // Runtime config

@@ -1,22 +1,16 @@
 # 🗄️ Database Configuration Guide
 
-This document explains how the Student Management System automatically switches between local SQLite and Cloudflare D1 databases based on the environment.
+This document explains how the Student Management System uses Cloudflare D1 database for all environments.
 
-## 🔄 Automatic Environment Detection
+## ☁️ Cloudflare D1 Configuration
 
-The application automatically detects the environment and uses the appropriate database:
+The application now uses Cloudflare D1 database exclusively:
 
-### 🔧 **Development Environment**
-- **Condition**: `NODE_ENV !== "production"`  
-- **Database**: Local SQLite file (`file:./prisma/dev.db`)
-- **Location**: `./prisma/dev.db` in your project directory
-- **Use Case**: Local development, testing, debugging
-
-### ☁️ **Production Environment**  
-- **Condition**: `NODE_ENV === "production"`
+### **All Environments**
 - **Database**: Cloudflare D1 (`test-musms`)
 - **Location**: Cloudflare's edge network
-- **Use Case**: Live deployment on Cloudflare Pages
+- **Binding**: `DB` (as defined in wrangler.toml)
+- **Use Case**: Development, testing, and production
 
 ## 🛠️ Implementation Details
 
@@ -26,21 +20,13 @@ The application automatically detects the environment and uses the appropriate d
 export function getPrisma(env) {
   if (prisma) return prisma
 
-  // Development: Use local SQLite file
-  if (process.env.NODE_ENV !== 'production') {
-    console.log('🔧 Using local SQLite database (file:./prisma/dev.db)')
-    prisma = new PrismaClient({
-      datasources: {
-        db: {
-          url: 'file:./prisma/dev.db'
-        }
-      }
-    })
-    return prisma
-  }
-
-  // Production: Use Cloudflare D1
+  // Always use Cloudflare D1 database (test-musms)
   console.log('☁️ Using Cloudflare D1 database (test-musms)')
+  
+  if (!env?.DB) {
+    throw new Error('D1 database binding not found. Make sure DB is configured in wrangler.toml and bound in your environment.')
+  }
+  
   const adapter = new PrismaD1(env.DB)
   prisma = new PrismaClient({ adapter })
   

@@ -25,6 +25,6 @@ logs
 
 # wrangler config
 wrangler.toml
-.wrangler/
+.wrangler
 
 /app/generated/prisma
