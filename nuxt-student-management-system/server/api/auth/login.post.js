@@ -8,10 +8,11 @@ export default defineEventHandler(async (event) => {
 
     // Validate input
     if (!username || !password) {
-      throw createError({
+      return {
+        success: false,
         statusCode: 400,
-        statusMessage: 'Username and password are required'
-      })
+        message: 'Username and password are required'
+      }
     }
 
     // Get database instance
@@ -34,27 +35,30 @@ export default defineEventHandler(async (event) => {
     })
 
     if (!user) {
-      throw createError({
+      return {
+        success: false,
         statusCode: 401,
-        statusMessage: 'Invalid credentials'
-      })
+        message: 'Invalid credentials'
+      }
     }
 
     // Check if user is active
     if (!user.isActive) {
-      throw createError({
+      return {
+        success: false,
         statusCode: 401,
-        statusMessage: 'Account is deactivated'
-      })
+        message: 'Account is deactivated'
+      }
     }
 
     // Verify password
     const isPasswordValid = await bcrypt.compare(password, user.password)
     if (!isPasswordValid) {
-      throw createError({
+      return {
+        success: false,
         statusCode: 401,
-        statusMessage: 'Invalid credentials'
-      })
+        message: 'Invalid credentials'
+      }
     }
 
     // Generate JWT token
@@ -83,13 +87,10 @@ export default defineEventHandler(async (event) => {
   } catch (error) {
     console.error('Login error:', error)
     
-    if (error.statusCode) {
-      throw error
-    }
-    
-    throw createError({
+    return {
+      success: false,
       statusCode: 500,
-      statusMessage: 'Internal server error'
-    })
+      message: 'Internal server error: ' + error.message
+    }
   }
 })
