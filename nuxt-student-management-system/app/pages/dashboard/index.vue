@@ -181,8 +181,7 @@
 <script setup lang="ts">
 // Meta (no middleware for testing)
 definePageMeta({
-  title: 'Dashboard',
-  layout: false  // Don't use any layout to avoid auth store issues
+  title: 'Dashboard'
 })
 
 // User info

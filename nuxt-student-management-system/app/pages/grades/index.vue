@@ -300,8 +300,7 @@
 <script setup>
 // Page meta
 definePageMeta({
-  title: 'Grade Management',
-  layout: false
+  title: 'Grade Management'
 })
 
 // Data

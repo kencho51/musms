@@ -197,8 +197,7 @@
 <script setup lang="ts">
 // Page meta
 definePageMeta({
-  title: 'User Management',
-  layout: false
+  title: 'User Management'
 })
 
 // Data

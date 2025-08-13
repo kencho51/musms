@@ -210,8 +210,7 @@
 <script setup lang="ts">
 // Page meta
 definePageMeta({
-  title: 'Course Management',
-  layout: false
+  title: 'Course Management'
 })
 
 // Data

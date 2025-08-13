@@ -63,11 +63,13 @@ onMounted(async () => {
   // Check if user should be redirected
   if (!isAuthenticated && !isAuthPage.value && route.path !== '/') {
     setRedirectPath(route.fullPath)
-    await navigateTo('/auth/login')
+    await navigateTo('/auth/login', { replace: true })
   } else if (isAuthenticated && isAuthPage.value) {
-    await navigateTo('/dashboard')
+    await navigateTo('/dashboard', { replace: true })
   }
 })
+
+
 
 // Manage sidebar state in localStorage
 if (process.client) {
