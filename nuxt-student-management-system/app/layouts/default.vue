@@ -53,6 +53,22 @@ const isAuthPage = computed(() => {
          route.path === '/register'
 })
 
+// Initialize auth store on client side
+const { initialize, isAuthenticated, setRedirectPath } = useAuthStore()
+
+// Initialize auth state when component mounts
+onMounted(async () => {
+  await initialize()
+  
+  // Check if user should be redirected
+  if (!isAuthenticated && !isAuthPage.value && route.path !== '/') {
+    setRedirectPath(route.fullPath)
+    await navigateTo('/auth/login')
+  } else if (isAuthenticated && isAuthPage.value) {
+    await navigateTo('/dashboard')
+  }
+})
+
 // Manage sidebar state in localStorage
 if (process.client) {
   const savedState = localStorage.getItem('sidebarCollapsed')
