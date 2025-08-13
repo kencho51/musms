@@ -1,5 +1,5 @@
-import jwt from 'jsonwebtoken'
 import { getDB } from '../../utils/db'
+import { verifyJWTFallback } from '../../utils/jwt.js'
 
 export default defineEventHandler(async (event) => {
   try {
@@ -22,7 +22,7 @@ export default defineEventHandler(async (event) => {
     let decoded: any
     
     try {
-      decoded = jwt.verify(token, config.jwtSecret)
+      decoded = await verifyJWTFallback(token, config.jwtSecret)
     } catch (error) {
       throw createError({
         statusCode: 401,
