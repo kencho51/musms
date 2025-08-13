@@ -74,7 +74,7 @@ export default defineEventHandler(async (event) => {
       where.yearOfStudy = parseInt(yearOfStudy)
     }
 
-    // Get students with pagination
+    // Get students with simplified query (no relations to avoid potential issues)
     const [students, total] = await Promise.all([
       prisma.student.findMany({
         where,
@@ -92,24 +92,8 @@ export default defineEventHandler(async (event) => {
           status: true,
           createdAt: true,
           updatedAt: true,
-          user: {
-            select: {
-              username: true,
-              isActive: true
-            }
-          },
-          creator: {
-            select: {
-              name: true,
-              username: true
-            }
-          },
-          _count: {
-            select: {
-              enrollments: true,
-              grades: true
-            }
-          }
+          userId: true,
+          createdBy: true
         },
         skip,
         take: limit,
