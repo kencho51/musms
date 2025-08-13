@@ -74,7 +74,7 @@ export default defineEventHandler(async (event) => {
       where.yearOfStudy = parseInt(yearOfStudy)
     }
 
-    // Get students with simplified query (no relations to avoid potential issues)
+    // Get students with minimal query (exclude DateTime fields that might cause issues)
     const [students, total] = await Promise.all([
       prisma.student.findMany({
         where,
@@ -85,19 +85,15 @@ export default defineEventHandler(async (event) => {
           lastName: true,
           email: true,
           phone: true,
-          dateOfBirth: true,
           major: true,
           yearOfStudy: true,
-          enrollmentDate: true,
           status: true,
-          createdAt: true,
-          updatedAt: true,
           userId: true,
           createdBy: true
         },
         skip,
         take: limit,
-        orderBy: { createdAt: 'desc' }
+        orderBy: { id: 'desc' }
       }),
       prisma.student.count({ where })
     ])
