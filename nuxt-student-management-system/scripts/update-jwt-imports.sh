@@ -2,8 +2,8 @@
 
 echo "🔄 Updating JWT imports in all API endpoints..."
 
-# Find all files with jwt import
-find server/api -name "*.ts" -o -name "*.js" | while read file; do
+# Find all files with jwt import in both server/api and app/server/api
+find server/api app/server/api -name "*.ts" -o -name "*.js" 2>/dev/null | while read file; do
   if grep -q "import jwt from 'jsonwebtoken'" "$file"; then
     echo "📝 Updating: $file"
     

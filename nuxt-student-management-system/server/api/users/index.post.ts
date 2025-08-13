@@ -1,10 +1,10 @@
 import bcrypt from 'bcryptjs'
 import { verifyJWTFallback } from '../../utils/jwt.js'
-import { PrismaClient } from '@prisma/client'
+import { getDB } from '../../utils/db.js'
 
-const prisma = new PrismaClient()
 
 export default defineEventHandler(async (event) => {
+  const prisma = getDB(event)
   try {
     // Verify admin access
     const authHeader = getHeader(event, 'authorization')
@@ -20,7 +20,7 @@ export default defineEventHandler(async (event) => {
     let decoded: any
     
     try {
-      decoded = await verifyJWTFallback(token,  config.jwtSecret)
+      decoded = await verifyJWTFallback(token, config.jwtSecret)
     } catch (error) {
       throw createError({
         statusCode: 401,
@@ -130,6 +130,5 @@ export default defineEventHandler(async (event) => {
       statusMessage: 'Internal server error'
     })
   } finally {
-    await prisma.$disconnect()
   }
 }) 

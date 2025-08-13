@@ -1,10 +1,10 @@
 import { verifyJWTFallback } from '../../utils/jwt.js'
-import { PrismaClient } from '@prisma/client'
-
-const prisma = new PrismaClient()
+import { getDB } from '../../utils/db.js'
 
 export default defineEventHandler(async (event) => {
   try {
+    const prisma = getDB(event)
+    
     // Verify admin/teacher access
     const authHeader = getHeader(event, 'authorization')
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
@@ -19,7 +19,7 @@ export default defineEventHandler(async (event) => {
     let decoded: any
     
     try {
-      decoded = await verifyJWTFallback(token,  config.jwtSecret)
+      decoded = await verifyJWTFallback(token, config.jwtSecret)
     } catch (error) {
       throw createError({
         statusCode: 401,
@@ -134,6 +134,6 @@ export default defineEventHandler(async (event) => {
       statusMessage: 'Internal server error'
     })
   } finally {
-    await prisma.$disconnect()
+
   }
 }) 
