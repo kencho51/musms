@@ -55,10 +55,10 @@ VALUES (
   'Student', 
   'jane.student@sms.edu', 
   '+1-555-0123', 
-  '2000-05-15', 
+  '2000-05-15 00:00:00', 
   'Computer Science', 
   1, 
-  '2024-08-01', 
+  '2024-08-01 00:00:00', 
   'ACTIVE', 
   CURRENT_TIMESTAMP, 
   CURRENT_TIMESTAMP, 
@@ -76,8 +76,8 @@ VALUES
 -- Sample grades
 INSERT INTO "grades" ("gradeValue", "letterGrade", "gpaPoints", "examType", "examDate", "notes", "createdAt", "updatedAt", "studentId", "courseId", "createdBy") 
 VALUES 
-  (85.5, 'B+', 3.3, 'Midterm', '2024-10-15', 'Good understanding of concepts', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 1, 1, 2),
-  (92.0, 'A-', 3.7, 'Quiz', '2024-09-20', 'Excellent work', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 1, 2, 2);
+  (85.5, 'B+', 3.3, 'Midterm', '2024-10-15 00:00:00', 'Good understanding of concepts', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 1, 1, 2),
+  (92.0, 'A-', 3.7, 'Quiz', '2024-09-20 00:00:00', 'Excellent work', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 1, 2, 2);
 
 -- Sample activity logs
 INSERT INTO "activity_logs" ("type", "title", "description", "metadata", "createdAt", "userId") 
