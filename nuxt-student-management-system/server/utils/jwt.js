@@ -25,7 +25,24 @@ export async function signJWT(payload, secret, expiresIn = '24h') {
 
   // Add expiration time
   const now = Math.floor(Date.now() / 1000)
-  const exp = expiresIn === '24h' ? now + 24 * 60 * 60 : now + parseInt(expiresIn)
+  let exp = now + 24 * 60 * 60 // Default 24 hours
+  
+  if (typeof expiresIn === 'string') {
+    if (expiresIn.endsWith('d')) {
+      const days = parseInt(expiresIn)
+      exp = now + days * 24 * 60 * 60
+    } else if (expiresIn.endsWith('h')) {
+      const hours = parseInt(expiresIn)
+      exp = now + hours * 60 * 60
+    } else if (expiresIn.endsWith('m')) {
+      const minutes = parseInt(expiresIn)
+      exp = now + minutes * 60
+    } else {
+      exp = now + parseInt(expiresIn) // Assume seconds
+    }
+  } else if (typeof expiresIn === 'number') {
+    exp = now + expiresIn
+  }
   
   const jwtPayload = {
     ...payload,
