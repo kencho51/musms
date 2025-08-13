@@ -144,6 +144,8 @@
 </template>
 
 <script setup lang="ts">
+import { useAuthStore } from '~/stores/auth'
+
 interface Props {
   isCollapsed: boolean
 }

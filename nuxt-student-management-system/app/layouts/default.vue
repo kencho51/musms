@@ -42,6 +42,8 @@
 </template>
 
 <script setup lang="ts">
+import { useAuthStore } from '~/stores/auth'
+
 // Reactive sidebar state
 const sidebarCollapsed = ref(false)
 
