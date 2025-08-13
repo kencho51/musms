@@ -297,15 +297,5 @@ export const useAuthStore = defineStore('auth', {
       
       return this.hasRole(requiredRole)
     }
-  },
-
-  // Persist state
-  persist: {
-    storage: persistedState.cookiesWithOptions({
-      secure: true,
-      sameSite: 'strict',
-      maxAge: 60 * 60 * 24 * 7 // 7 days
-    }),
-    paths: ['user', 'isAuthenticated']
   }
 }) 

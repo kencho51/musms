@@ -105,10 +105,23 @@ definePageMeta({
 
 // Check if user is already authenticated and redirect
 onMounted(async () => {
-  const token = useCookie('auth-token')
-  if (token.value) {
-    // User might be authenticated, redirect to dashboard
-    await navigateTo('/dashboard')
+  try {
+    const token = useCookie('auth-token')
+    if (token.value) {
+      // Check if token is valid by calling /api/auth/me
+      const response = await $fetch('/api/auth/me', {
+        headers: { Authorization: `Bearer ${token.value}` }
+      })
+      
+      if (response.success) {
+        // User is authenticated, redirect to dashboard
+        await navigateTo('/dashboard')
+      }
+    }
+  } catch (error) {
+    // Token is invalid, clear it and stay on landing page
+    const token = useCookie('auth-token')
+    token.value = null
   }
 })
 </script>
