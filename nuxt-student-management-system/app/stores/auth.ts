@@ -258,8 +258,13 @@ export const useAuthStore = defineStore('auth', {
       const tokenCookie = useCookie('auth-token')
       tokenCookie.value = null
 
-      // Redirect to login page
-      await navigateTo('/auth/login')
+      // Clear localStorage
+      if (process.client) {
+        localStorage.removeItem('sidebarCollapsed')
+      }
+
+      // Force redirect to login page with replace to prevent back navigation
+      await navigateTo('/auth/login', { replace: true })
     },
 
     // Set redirect path for after login

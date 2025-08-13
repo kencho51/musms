@@ -250,7 +250,6 @@ const handleSearch = () => {
 const handleLogout = async () => {
   showUserMenu.value = false
   await logout()
-  await navigateTo('/auth/login')
 }
 
 const formatTime = (date: Date) => {
