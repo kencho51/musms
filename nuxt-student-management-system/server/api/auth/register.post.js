@@ -1,5 +1,5 @@
 import bcrypt from 'bcryptjs'
-import jwt from 'jsonwebtoken'
+import { verifyJWTFallback } from '../../utils/jwt.js'
 import { getDB } from '../../utils/db.js'
 
 export default defineEventHandler(async (event) => {

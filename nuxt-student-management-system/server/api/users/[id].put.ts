@@ -1,5 +1,5 @@
 import bcrypt from 'bcryptjs'
-import jwt from 'jsonwebtoken'
+import { verifyJWTFallback } from '../../utils/jwt.js'
 import { PrismaClient } from '@prisma/client'
 
 const prisma = new PrismaClient()
@@ -20,7 +20,7 @@ export default defineEventHandler(async (event) => {
     let decoded: any
     
     try {
-      decoded = jwt.verify(token, config.jwtSecret)
+      decoded = await verifyJWTFallback(token,  config.jwtSecret)
     } catch (error) {
       throw createError({
         statusCode: 401,
