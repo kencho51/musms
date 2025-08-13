@@ -1,262 +1,318 @@
 # 🎓 Student Management System
 
-A modern, full-stack Student Management System built with **Nuxt 4** and deployed on **Cloudflare Pages** with **D1 database**.
+A modern, full-stack student management system built with **Nuxt 4**, **Cloudflare D1**, and **TypeScript**. Features role-based access control, real-time data management, and a responsive UI.
 
 ## ✨ Features
 
-- 🔐 **Authentication** - JWT-based auth with role-based access control (Admin, Teacher, Student)
-- 👥 **User Management** - Complete CRUD operations for users
-- 🎓 **Student Management** - Student profiles and academic tracking
-- 📚 **Course Management** - Course creation and management
-- 📊 **Grade Management** - Grade recording and analytics
-- 🎨 **Modern UI** - Responsive design with Tailwind CSS
-- ☁️ **Cloud-First** - Built for Cloudflare Pages with D1 database
+- **👥 User Management** - Role-based access (Admin, Teacher, Student)
+- **🎓 Student Records** - Comprehensive academic information management
+- **📚 Course Management** - Create and manage academic programs
+- **📊 Grade Tracking** - Academic performance monitoring
+- **🔐 Authentication** - Secure JWT-based auth system
+- **🌙 Dark Mode** - Full dark/light theme support
+- **📱 Responsive** - Works on all device sizes
+- **☁️ Cloud-Native** - Built for Cloudflare ecosystem
 
-## 🚀 Tech Stack
-
-- **Frontend & Backend**: [Nuxt 4](https://nuxt.com/) (Full-stack framework)
-- **Database**: [Cloudflare D1](https://developers.cloudflare.com/d1/) (SQLite-compatible)
-- **ORM**: [Prisma](https://www.prisma.io/) with D1 adapter
-- **Styling**: [Tailwind CSS](https://tailwindcss.com/)
-- **Deployment**: [Cloudflare Pages](https://pages.cloudflare.com/)
-- **Language**: JavaScript (minimal TypeScript)
-
-## 🛠️ Local Development
+## 🚀 Quick Start
 
 ### Prerequisites
-- Node.js 18+
-- Wrangler CLI (`npm install -g wrangler`)
 
-### Setup
+- Node.js 18+ and npm
+- Cloudflare account (free tier works)
+- Git
 
-1. **Clone and install**:
+### 1. **Setup Project**
+
 ```bash
-git clone <your-repo>
+git clone <repository-url>
 cd nuxt-student-management-system
 npm install
 ```
 
-2. **Environment setup**:
-```bash
-# Create .env file
-cp .env.example .env
-# Edit .env with your values
-```
-
-3. **Database setup**:
-```bash
-# Generate Prisma client
-npm run db:generate
-
-# Create local database
-npm run db:push
-
-# Seed with demo data
-npm run db:seed
-```
-
-4. **Start development server**:
-```bash
-npm run dev
-```
-
-Visit `http://localhost:3000`
-
-### Demo Credentials
-- **Admin**: `admin` / `admin123`
-- **Teacher**: `teacher` / `teacher123`
-- **Student**: `student` / `student123`
-
-## ☁️ Cloudflare Deployment
-
-### 1. Create D1 Database
+### 2. **Configure Cloudflare D1**
 
 ```bash
 # Login to Cloudflare
-npx wrangler login
+npx wrangler auth login
 
-# Create D1 database
-npx wrangler d1 create student-management-db
-
-# Update wrangler.toml with your database ID
+# Setup D1 database
+npm run setup:d1
 ```
 
-### 2. Deploy to Pages
-
-#### Option A: Using Wrangler (Direct Upload)
-```bash
-# Build for production
-npm run build
-
-# Deploy to Pages
-npm run deploy
-```
-
-#### Option B: Git Integration
-1. Push code to GitHub
-2. Connect repository in [Cloudflare Pages dashboard](https://dash.cloudflare.com/pages)
-3. Configure build settings:
-   - **Build command**: `npm run build`
-   - **Build output**: `dist`
-   - **Framework preset**: Nuxt.js
-
-### 3. Configure D1 Binding
-
-In Cloudflare Pages dashboard:
-1. Go to your Pages project
-2. Settings → Functions
-3. Add D1 database binding:
-   - **Variable name**: `DB`
-   - **D1 database**: Select your database
-
-### 4. Set Environment Variables
-
-In Pages dashboard → Settings → Environment variables:
-```
-JWT_SECRET=your-production-secret-key
-```
-
-### 5. Apply Database Migrations
+### 3. **Development**
 
 ```bash
-# Apply schema and seed data
-npx wrangler d1 execute test-musms --file=migrations/001_initial_schema.sql --remote
-npx wrangler d1 execute test-musms --file=migrations/002_seed_demo_data.sql --remote
+# Start development server (with D1 integration)
+npm run dev
 
-# Or use the automated script
-npm run deploy:d1
+# Or start without Cloudflare integration
+npm run dev:local
 ```
 
-## 🗄️ Database Migrations
+### 4. **Access the Application**
 
-All database migrations are in the `migrations/` directory:
+- **Local**: http://localhost:3000
+- **Demo Credentials**:
+  - Admin: `admin` / `admin123`
+  - Teacher: `teacher` / `teacher123`
+  - Student: `student` / `student123`
 
-- **`001_initial_schema.sql`** - Creates all tables and indexes
-- **`002_seed_demo_data.sql`** - Inserts demo users and sample data
-- **`README.md`** - Detailed migration documentation
+## 🏗️ Architecture
 
-### **Quick Deploy (Automated)**
+### **Database Strategy**
+
+This project uses **Cloudflare D1** (SQLite) for all environments:
+
+```
+┌─────────────────────────────────────────┐
+│              D1 Architecture            │
+├─────────────────────────────────────────┤
+│  🏠 Local Dev     ☁️ Production         │
+│  ├─ .wrangler/    ├─ Cloudflare Cloud   │
+│  ├─ SQLite file   ├─ Distributed DB     │
+│  └─ --local flag  └─ --remote flag      │
+│                                         │
+│  ⚠️  Databases are SEPARATE             │
+│      Changes don't sync automatically   │
+└─────────────────────────────────────────┘
+```
+
+**Important**: Local and remote databases are independent. Apply changes to both:
 
 ```bash
-# Deploy D1 database with schema and data
-npm run deploy:d1
+# Apply to local
+npx wrangler d1 execute test-musms --file=migration.sql --local
+
+# Apply to remote  
+npx wrangler d1 execute test-musms --file=migration.sql --remote
 ```
 
-### **Manual Migration Commands**
+### **Tech Stack**
 
-```bash
-# Apply schema
-wrangler d1 execute student-management-db --file=migrations/001_initial_schema.sql
-
-# Seed demo data  
-wrangler d1 execute student-management-db --file=migrations/002_seed_demo_data.sql
-
-# Verify deployment
-wrangler d1 execute student-management-db --command="SELECT username, role FROM users;"
-```
-
-### **Generate New Migrations**
-
-```bash
-# When updating schema
-npx prisma migrate diff --from-empty --to-schema-datamodel prisma/schema.prisma --script > migrations/003_your_changes.sql
-
-# Apply to D1
-wrangler d1 execute student-management-db --file=migrations/003_your_changes.sql
-```
+- **Frontend**: Nuxt 4, Vue 3, TypeScript, Tailwind CSS
+- **Backend**: Nitro, Cloudflare Functions
+- **Database**: Cloudflare D1 (SQLite)
+- **ORM**: Prisma with D1 adapter
+- **Auth**: Custom JWT implementation (Web Crypto API)
+- **Deployment**: Cloudflare Pages
 
 ## 📁 Project Structure
 
 ```
 nuxt-student-management-system/
-├── app/                      # Nuxt app directory
+├── 📱 app/                    # Frontend application
 │   ├── components/           # Vue components
-│   ├── layouts/             # App layouts
-│   ├── pages/               # File-based routes
-│   ├── stores/              # Pinia stores
-│   ├── utils/               # Utility functions
-│   └── app.vue              # Root component
-├── server/                  # Nitro server
-│   ├── api/                 # API routes
-│   └── utils/               # Server utilities (DB connection)
-├── migrations/              # D1 database migrations
+│   ├── layouts/              # App layouts
+│   ├── pages/                # File-based routes
+│   ├── stores/               # Pinia state management
+│   └── types/                # TypeScript definitions
+├── 🔧 server/                # Backend API
+│   ├── api/                  # API endpoints
+│   │   ├── auth/            # Authentication
+│   │   ├── users/           # User management
+│   │   ├── students/        # Student records
+│   │   ├── courses/         # Course management
+│   │   ├── grades/          # Grade tracking
+│   │   └── health.get.ts    # System health check
+│   └── utils/               # Server utilities
+│       ├── db.js            # Database connection
+│       ├── jwt.js           # JWT handling
+│       └── crypto.js        # Cryptography
+├── 🗄️ migrations/            # Database migrations
 │   ├── 001_initial_schema.sql
-│   ├── 002_seed_demo_data.sql
-│   └── README.md            # Migration documentation
-├── scripts/                 # Deployment scripts
-│   └── deploy-d1.sh         # Automated D1 deployment
-├── prisma/                  # Database schema & local seed
-├── wrangler.toml            # Cloudflare configuration
-└── nuxt.config.ts           # Nuxt configuration
+│   └── 002_seed_demo_data.sql
+├── 🛠️ scripts/               # Utility scripts
+│   ├── deploy-d1.sh         # Deploy database
+│   └── fix-datetime-formats.sh
+├── ⚙️ prisma/                # Database schema
+│   └── schema.prisma        # Prisma schema
+└── 📄 docs/                  # Documentation
+    └── API.md               # API documentation
 ```
 
-## 🔧 Key Files
+## 🔌 API Reference
 
-- **`wrangler.toml`** - Cloudflare D1 database binding configuration
-- **`nuxt.config.ts`** - Nuxt config with Cloudflare Pages preset
-- **`app/utils/db.js`** - Database connection utility (handles both local SQLite and D1)
-- **`prisma/schema.prisma`** - Database schema with D1 adapter support
+### **Authentication**
+```http
+POST /api/auth/login      # User login
+POST /api/auth/register   # User registration
+GET  /api/auth/me         # Get current user
+POST /api/auth/logout     # User logout
+```
 
-## 📚 API Routes
+### **Users** (Admin only)
+```http
+GET    /api/users         # List users
+POST   /api/users         # Create user
+PUT    /api/users/[id]    # Update user
+DELETE /api/users/[id]    # Delete user
+```
 
-### Authentication
-- `POST /api/auth/login` - User login
-- `POST /api/auth/register` - User registration
+### **Students** (Admin/Teacher)
+```http
+GET    /api/students      # List students
+POST   /api/students      # Create student
+PUT    /api/students/[id] # Update student
+DELETE /api/students/[id] # Delete student
+```
 
-### Users (Admin only)
-- `GET /api/users` - List users
-- `POST /api/users` - Create user
-- `PUT /api/users/[id]` - Update user
-- `DELETE /api/users/[id]` - Delete user
+### **Courses** (Admin/Teacher)
+```http
+GET    /api/courses       # List courses
+POST   /api/courses       # Create course
+PUT    /api/courses/[id]  # Update course
+DELETE /api/courses/[id]  # Delete course
+```
 
-### Students
-- `GET /api/students` - List students
-- `POST /api/students` - Create student
-- `PUT /api/students/[id]` - Update student
-- `DELETE /api/students/[id]` - Delete student
+### **Grades** (Admin/Teacher)
+```http
+GET    /api/grades        # List grades
+POST   /api/grades        # Create grade
+PUT    /api/grades/[id]   # Update grade
+DELETE /api/grades/[id]   # Delete grade
+```
 
-### Courses
-- `GET /api/courses` - List courses
-- `POST /api/courses` - Create course
-- `PUT /api/courses/[id]` - Update course
-- `DELETE /api/courses/[id]` - Delete course
+### **System**
+```http
+GET /api/health           # System health check
+```
 
-### Grades
-- `GET /api/grades` - List grades
-- `POST /api/grades` - Create grade
-- `PUT /api/grades/[id]` - Update grade
-- `DELETE /api/grades/[id]` - Delete grade
+## 🚀 Deployment
 
-## 🧪 Development Commands
+### **Cloudflare Pages Deployment**
 
+1. **Connect GitHub Repository**
+   - Go to Cloudflare Pages dashboard
+   - Connect your GitHub repository
+   - Set build command: `npm run build`
+   - Set output directory: `dist`
+
+2. **Configure D1 Database Binding**
+   ```
+   Variable name: DB
+   D1 database: test-musms
+   ```
+
+3. **Set Environment Variables**
+   ```env
+   NODE_ENV=production
+   JWT_SECRET=your-production-secret-key-min-32-chars
+   ```
+
+4. **Deploy Database**
+   ```bash
+   npm run deploy:d1
+   ```
+
+### **Manual Deployment**
 ```bash
-# Development
-npm run dev                  # Start dev server
-npm run build               # Build for production
-npm run preview             # Preview production build
+# Build and deploy
+npm run build
+npm run deploy
 
-# Database
-npm run db:generate         # Generate Prisma client
-npm run db:push            # Push schema to database
-npm run db:seed            # Seed with demo data
-npm run db:studio          # Open Prisma Studio
-npm run db:reset           # Reset and seed database
-
-# Deployment
-npm run deploy:d1          # Deploy D1 database (automated)
-npm run deploy             # Deploy to Cloudflare Pages
-npm run deploy:full        # Build and deploy everything
-npm run cf:dev             # Test with Cloudflare D1 locally
+# Or deploy everything
+npm run deploy:full
 ```
 
-## 🔗 Useful Links
+## 🔧 Development Commands
 
-- [Nuxt 4 Documentation](https://nuxt.com/)
-- [Cloudflare Pages Documentation](https://developers.cloudflare.com/pages/)
-- [Cloudflare D1 Documentation](https://developers.cloudflare.com/d1/)
-- [Prisma Documentation](https://www.prisma.io/docs/)
-- [Wrangler CLI Documentation](https://developers.cloudflare.com/workers/wrangler/)
+### **Database Management**
+```bash
+# Setup D1 database
+npm run setup:d1
+
+# Execute SQL on local DB
+npm run db:execute:local -- --file=query.sql
+
+# Execute SQL on remote DB  
+npm run db:execute -- --file=query.sql
+
+# Reset local database
+npm run db:reset:local
+
+# Get database info
+npm run db:info
+```
+
+### **Development**
+```bash
+# Start with Cloudflare integration
+npm run dev
+
+# Start without Cloudflare
+npm run dev:local
+
+# Build for production
+npm run build
+
+# Preview production build
+npm run preview
+```
+
+### **Maintenance**
+```bash
+# Fix DateTime format issues
+chmod +x scripts/fix-datetime-formats.sh
+./scripts/fix-datetime-formats.sh
+
+# Health check
+curl http://localhost:3000/api/health | jq
+```
+
+## 🐛 Troubleshooting
+
+### **Common Issues**
+
+#### "no such table: main.users"
+- **Cause**: Local D1 database not initialized
+- **Fix**: `npm run db:setup:local`
+
+#### "persistedState is not defined"
+- **Cause**: Pinia store persistence issue
+- **Fix**: Clear `.nuxt` cache and restart
+
+#### "DateTime conversion error"
+- **Cause**: Date format mismatch in database
+- **Fix**: Run `./scripts/fix-datetime-formats.sh`
+
+#### Login returns 500 error
+- **Cause**: Missing D1 binding or JWT secret
+- **Fix**: Configure D1 binding and JWT_SECRET in Cloudflare Pages
+
+### **Health Check**
+
+Monitor system health at `/api/health`:
+
+```json
+{
+  "status": "healthy",
+  "checks": {
+    "database": { "status": "healthy" },
+    "jwt": { "status": "healthy" },
+    "auth": { "status": "no_token" }
+  }
+}
+```
+
+## 📝 Contributing
+
+1. Fork the repository
+2. Create a feature branch: `git checkout -b feature/new-feature`
+3. Make changes and test thoroughly
+4. Commit: `git commit -m "Add new feature"`
+5. Push: `git push origin feature/new-feature`
+6. Create a Pull Request
 
 ## 📄 License
 
-MIT License
+This project is licensed under the MIT License.
+
+## 🙏 Acknowledgments
+
+- Built with [Nuxt 4](https://nuxt.com/)
+- Powered by [Cloudflare D1](https://developers.cloudflare.com/d1/)
+- UI components inspired by [Tailwind UI](https://tailwindui.com/)
+
+---
+
+For detailed API documentation, see [docs/API.md](docs/API.md)
