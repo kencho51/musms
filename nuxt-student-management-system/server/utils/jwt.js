@@ -9,8 +9,12 @@ function base64urlEncode(str) {
 }
 
 function base64urlDecode(str) {
-  str += new Array(5 - str.length % 4).join('=')
-  return atob(str.replace(/\-/g, '+').replace(/_/g, '/'))
+  str = str.replace(/-/g, '+').replace(/_/g, '/')
+  // Add padding
+  while (str.length % 4) {
+    str += '='
+  }
+  return atob(str)
 }
 
 export async function signJWT(payload, secret, expiresIn = '24h') {
@@ -50,7 +54,9 @@ export async function signJWT(payload, secret, expiresIn = '24h') {
     encoder.encode(data)
   )
   
-  const encodedSignature = base64urlEscape(btoa(String.fromCharCode(...new Uint8Array(signature))))
+  const signatureArray = new Uint8Array(signature)
+  const signatureString = String.fromCharCode.apply(null, Array.from(signatureArray))
+  const encodedSignature = base64urlEscape(btoa(signatureString))
   
   return `${data}.${encodedSignature}`
 }
@@ -76,8 +82,12 @@ export async function verifyJWT(token, secret) {
     )
     
     // Decode the signature
+    let signatureStr = encodedSignature.replace(/-/g, '+').replace(/_/g, '/')
+    while (signatureStr.length % 4) {
+      signatureStr += '='
+    }
     const signature = new Uint8Array(
-      atob(encodedSignature.replace(/-/g, '+').replace(/_/g, '/') + '===')
+      atob(signatureStr)
         .split('')
         .map(char => char.charCodeAt(0))
     )
