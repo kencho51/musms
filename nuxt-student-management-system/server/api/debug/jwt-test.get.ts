@@ -1,4 +1,4 @@
-import jwt from 'jsonwebtoken'
+import { signJWTFallback, verifyJWTFallback } from '../../utils/jwt.js'
 
 export default defineEventHandler(async (event) => {
   try {
@@ -18,7 +18,7 @@ export default defineEventHandler(async (event) => {
     
     try {
       // Test JWT signing
-      token = jwt.sign(testPayload, config.jwtSecret, { expiresIn: '7d' })
+      token = await signJWTFallback(testPayload, config.jwtSecret, '7d')
     } catch (error: any) {
       tokenError = error.message
     }
@@ -26,7 +26,7 @@ export default defineEventHandler(async (event) => {
     if (token) {
       try {
         // Test JWT verification
-        verifyResult = jwt.verify(token, config.jwtSecret)
+        verifyResult = await verifyJWTFallback(token, config.jwtSecret)
       } catch (error: any) {
         verifyError = error.message
       }
@@ -35,7 +35,7 @@ export default defineEventHandler(async (event) => {
     return {
       success: true,
       tests: {
-        jwt_available: typeof jwt.sign === 'function',
+        jwt_available: true,
         jwt_secret_available: !!config.jwtSecret,
         jwt_secret_length: config.jwtSecret ? config.jwtSecret.length : 0,
         token_generation_success: !!token,

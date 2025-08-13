@@ -1,6 +1,6 @@
-import jwt from 'jsonwebtoken'
 import { getDB } from '../../utils/db.js'
 import { verifyBcryptPassword } from '../../utils/crypto.js'
+import { signJWTFallback } from '../../utils/jwt.js'
 
 export default defineEventHandler(async (event) => {
   try {
@@ -63,14 +63,14 @@ export default defineEventHandler(async (event) => {
 
     // Generate JWT token
     const config = useRuntimeConfig()
-    const token = jwt.sign(
+    const token = await signJWTFallback(
       { 
         userId: user.id, 
         username: user.username, 
         role: user.role 
       },
       config.jwtSecret,
-      { expiresIn: '7d' }
+      '7d'
     )
 
     // Remove password from response
