@@ -25,38 +25,36 @@ A comprehensive web-based student management system built with **FastAPI** backe
 ## 🚀 Quick Start
 
 ### Prerequisites
-- Python 3.8 or higher
-- pip (Python package installer)
+- Python 3.13 or higher
+- [uv](https://docs.astral.sh/uv/) - Fast Python package installer and resolver
 
 ### Installation
 
-1. **Clone and navigate to the project**:
+1. **Install uv** (if not already installed):
    ```bash
-   cd /Volumes/kencho/mu-sms
+   # macOS/Linux
+   brew install uv
    ```
 
-2. **Create and activate a virtual environment**:
+2. **Clone and navigate to the project**:
    ```bash
-   python3 -m venv sms
-   source sms/bin/activate  # On Windows: venv\Scripts\activate
-   python --version
-   Python 3.13.2  
-   pip --version
-   pip 25.0 from /Volumes/kencho/mu-sms/sms/lib/python3.13/site-packages/pip (python 3.13)
-   pip install --upgrade pip
-   pip --version                  
-   pip 25.2 from /Volumes/kencho/mu-sms/sms/lib/python3.13/site-packages/pip (python 3.13)
+   cd /path/to/your/project
+   cd student-management-system
    ```
 
-3. **Install dependencies**:
+3. **Install dependencies and create virtual environment**:
    ```bash
-   cd student-management-system 
-   pip install -r requirements.txt
+   uv sync
    ```
+   
+   This will automatically:
+   - Create a virtual environment
+   - Install all dependencies from `pyproject.toml`
+   - Set up the project for development
 
 4. **Run the application**:
    ```bash
-   python run.py
+   uv run run.py
    ```
 
 5. **Access the application**:
@@ -109,8 +107,9 @@ A comprehensive web-based student management system built with **FastAPI** backe
 - **SQLAlchemy**: SQL toolkit and Object-Relational Mapping
 - **SQLite**: Lightweight database for development
 - **Pydantic**: Data validation using Python type annotations
-- **JWT**: JSON Web Tokens for secure authentication
-- **bcrypt**: Password hashing for security
+- **python-jose**: JSON Web Tokens for secure authentication
+- **passlib + bcrypt**: Password hashing for security
+- **uv**: Fast Python package installer and resolver
 
 ### Frontend
 - **HTML5**: Semantic markup structure
@@ -128,7 +127,7 @@ A comprehensive web-based student management system built with **FastAPI** backe
 ## 📁 Project Structure
 
 ```
-mu-sms/
+student-management-system/
 ├── app/                    # FastAPI application
 │   ├── __init__.py
 │   ├── main.py            # Main FastAPI app and routes
@@ -150,9 +149,11 @@ mu-sms/
 │   ├── register.html      # Registration page
 │   ├── dashboard.html     # Dashboard
 │   └── students.html      # Student management
-├── requirements.txt       # Python dependencies
-├── run.py                # Application launcher
-└── README.md             # This file
+├── pyproject.toml         # Project configuration and dependencies
+├── uv.lock                # Dependency lock file (auto-generated)
+├── reset_password.py      # Password reset utility
+├── run.py                 # Application launcher
+└── README.md              # This file
 ```
 
 ## 🔧 API Endpoints
@@ -197,17 +198,51 @@ The frontend uses a shadcn/ui-inspired design system with:
 
 ### Running in Development Mode
 ```bash
-python run.py
+uv run run.py
+```
+
+### Common uv Commands
+```bash
+# Install dependencies and sync environment
+uv sync
+
+# Run the application
+uv run run.py
+
+# Run the password reset utility
+uv run reset_password.py list
+uv run reset_password.py admin newpassword123
+
+# Add new dependencies
+uv add package-name
+
+# Add development dependencies
+uv add --dev package-name
+
+# Update dependencies
+uv sync --upgrade
 ```
 
 ### Database Management
 The application uses SQLite with automatic table creation. The database file `university_sms.db` will be created automatically on first run.
+
+### Password Reset Utility
+If you forget a password, use the included reset utility:
+```bash
+# List all users
+uv run reset_password.py list
+
+# Reset a specific user's password
+uv run reset_password.py username newpassword
+uv run reset_password.py admin admin123
+```
 
 ### Making Changes
 1. Backend changes in `app/` directory
 2. Frontend styles in `static/css/style.css`
 3. JavaScript functionality in `static/js/`
 4. Templates in `templates/` directory
+5. Dependencies in `pyproject.toml`
 
 ## 📝 License
 
@@ -220,3 +255,8 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 ## 📞 Support
 
 For support or questions, please create an issue in the project repository.
+
+
+# reference
+1. https://www.youtube.com/watch?v=jd1aRE5pJWc
+2. https://www.youtube.com/watch?v=aVXs8lb7i9U
